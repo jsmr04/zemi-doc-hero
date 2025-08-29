@@ -1,0 +1,31 @@
+paths:
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: Authenticate with username and password
+      operationId: login
+      requestBody:
+        description: Credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      responses:
+        200:
+          description: Login success
+          content: {}
+           
+components:
+  schemas:
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example:
+        username: johndoe@email.com
+        password: Pa$$w0rd

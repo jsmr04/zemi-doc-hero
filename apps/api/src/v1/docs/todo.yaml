@@ -1,0 +1,138 @@
+paths:
+  /todo/{id}/update:
+    put:
+      tags:
+      - todo
+      summary: Update an existing todo
+      operationId: updateTodo
+      parameters:
+      - name: id
+        in: path
+        description: ID of todo to modify
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Todo data that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+        required: true
+      responses:
+        200:
+          description: Updated todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Todo not found
+          content: {}
+  /todo/add:
+    post:
+      tags:
+      - todo
+      summary: Add a new todo to the list
+      operationId: addTodo
+      requestBody:
+        description: Todo object that needs to be added to the list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+        required: true
+      responses:
+        200:
+          description: Todo added successfully
+          content: {}
+      x-codegen-request-body-name: body
+  /todo/{id}/delete:
+    delete:
+      tags:
+      - todo
+      summary: Delete an existing todo
+      operationId: deleteTodo
+      parameters:
+      - name: id
+        in: path
+        description: ID of todo to delele
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Todo deleted
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Todo not found
+          content: {}
+  /todo/:
+    get:
+      tags:
+      - todo
+      summary: Get list of todos
+      description: Get list of todos
+      operationId: getTodos
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+  /todo/{id}:
+    get:
+      tags:
+      - todo
+      summary: Get todo by a given id
+      operationId: getTodoById
+      parameters:
+      - name: id
+        in: path
+        description: Id of todo
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Todo'
+                  
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+          format: int32
+        completed:
+          type: boolean
+          default: false
+      example:
+        id: 10
+        userId: 3
+        title: Do your homework
+        completed: true
