@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { ValidationError, validationResult } from "express-validator";
-import { GetTodoByIdDTO, GetTodoById } from "./todo.dto";
-import * as todoService from "./todo.service";
-import { Todo } from "./todo.types";
+import { GetTodoByIdDTO, GetTodoById } from "./core.dto";
+import * as todoService from "./core.service";
+import { Todo } from "./core.types";
 import { logger } from "../../../plugins/winston";
 //INFO: Controller gets the request from the route, it validates parameters, 
 //calls the service, casts values, and finally returns http code and response
