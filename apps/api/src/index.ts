@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
-import { PORT, API_PREFIX } from "./configs";
+import { PORT, API_PREFIX } from "@/configs";
 import { plugins } from "./plugins";
 import routes, { Route } from "./v1/routes";
 import { logger, expressErrorLogger } from "./plugins/winston";
-import { swaggerMiddleware } from "./plugins/swagger";
+import { swaggerMiddleware } from "@/plugins/swagger";
 
 //Create express instance
 const app = express()
