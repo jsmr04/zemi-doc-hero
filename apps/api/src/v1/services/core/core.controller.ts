@@ -32,12 +32,45 @@ export const splitDocument = async (req: Request, res: Response)=>{
         const ranges = data?.ranges as number[][]
 
         if (!ranges || ranges.length === 0) return res.status(400).json({ error: "Please provide the ranges" });
+        
+        const isRangeValid = ranges.every((ranges: number[]) => ranges[0] <= ranges[1])
+        if (!isRangeValid) return res.status(400).json({ error: "Please provide a valid range" });
 
         if (!document) return res.status(400).json({ error: "Please upload a PDF" });
 
         const splitDocuments = await coreService.splitDocument(document, ranges)
        
         return res.send(splitDocuments)
+
+    } catch (error) {
+        logger.error(error)
+        res.status(500).send({ error: "Failed to split PDF" })
+    }
+}
+
+export const deletePagesFromDocument = async (req: Request, res: Response)=>{
+    try {
+        const document = req.file as Express.Multer.File;
+        const rawData = req.body?.data
+        
+        if (!rawData) return res.status(400).json({ error: "Please provide the ranges" });
+
+        const data = JSON.parse(rawData)
+        const ranges = data?.ranges as number[][]
+
+        if (!ranges || ranges.length === 0) return res.status(400).json({ error: "Please provide the ranges" });
+
+        const isRangeValid = ranges.every((ranges: number[]) => ranges[0] <= ranges[1])
+        if (!isRangeValid) return res.status(400).json({ error: "Please provide a valid range" });
+
+        if (!document) return res.status(400).json({ error: "Please upload a PDF" });
+
+        const deletedPagesDocument = await coreService.deletePages(document, ranges)
+       
+        res.setHeader("Content-Type", "application/pdf")
+        res.setHeader("Content-Disposition", "attachment; filename=deleted_pages_document.pdf")
+
+        return res.send(deletedPagesDocument)
 
     } catch (error) {
         logger.error(error)

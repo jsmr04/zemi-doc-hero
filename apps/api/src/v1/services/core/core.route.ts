@@ -8,5 +8,6 @@ const upload = multer({ storage: multer.memoryStorage() })
 
 router.post("/merge", upload.array('file', 10), coreController.mergeDocuments)
 router.post("/split", upload.single('file'), coreController.splitDocument)
+router.post("/delete-pages", upload.single('file'), coreController.deletePagesFromDocument)
 
 export default router
