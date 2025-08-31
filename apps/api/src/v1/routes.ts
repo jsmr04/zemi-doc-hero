@@ -1,14 +1,12 @@
 import { Router } from "express";
-import { todoRoute } from "./services/todos";
-import { authRoute } from "./services/auth";
+import { coreRoute } from "./services/core";
 
 export type Route = {
     routeName: string
     route: Router
 }
 const routes = [
-    {routeName: "/todo", route: todoRoute},
-    {routeName: "/auth", route: authRoute},
+    {routeName: "/core", route: coreRoute}
 ]
 
 export default routes

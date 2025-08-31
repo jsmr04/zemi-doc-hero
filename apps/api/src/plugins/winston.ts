@@ -1,7 +1,5 @@
 import winston from 'winston'
 import expressWinston from 'express-winston'
-// import 'winston-daily-rotate-file'
-import { APP_NAME, LOG_PATH } from "../configs";
 
 const loggerConfig = {
   transports: [

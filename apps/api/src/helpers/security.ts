@@ -1,5 +1,5 @@
 import * as jwt from "jsonwebtoken";
-import { JWT_SECRET_KEY } from "../configs";
+import { JWT_SECRET_KEY } from "@/configs";
 
 const JWT_EXPIRES_IN = 1000 * 60 * 60 * 24; // 24 Hours
 

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateToken } from "../helpers/security";
+import { validateToken } from "@/helpers/security";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   // Validate token

@@ -1,6 +1,6 @@
 import swaggerJsdoc, { Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { PORT, API_PREFIX } from "../configs";
+import { PORT, API_PREFIX } from "@/configs";
 
 const options: Options = {
     definition: {

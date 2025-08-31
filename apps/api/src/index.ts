@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express';
+import expressListEndpoints from "express-list-endpoints";
 import { PORT, API_PREFIX } from "@/configs";
-import { plugins } from "./plugins";
-import routes, { Route } from "./v1/routes";
-import { logger, expressErrorLogger } from "./plugins/winston";
+import { plugins } from "@/plugins";
+import routes, { Route } from "@/v1/routes";
+import { logger, expressErrorLogger } from "@/plugins/winston";
 import { swaggerMiddleware } from "@/plugins/swagger";
 
 //Create express instance
@@ -29,4 +30,11 @@ const { path, serve, setup } = swaggerMiddleware
 app.use(path, serve, setup)
 
 //Start server
-app.listen(PORT, () => logger.info(`Listening on ${PORT}`))
+app.listen(PORT, () => {
+    // Print endpoints - NOT WORKING
+    // const endpoints = expressListEndpoints(app);
+    // console.log(endpoints)
+
+    logger.info(`Listening on ${PORT}`)
+})
+
