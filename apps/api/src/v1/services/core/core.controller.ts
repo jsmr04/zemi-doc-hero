@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import path from "path";
+import fs from "fs";
 import { PDFDocument } from "pdf-lib"
 import * as coreService from "./core.service";
 import { logger } from "@/plugins/winston";
@@ -9,7 +11,7 @@ export const mergeDocuments = async (req: Request, res: Response)=>{
         const documents = req.files as Express.Multer.File[];
         if (!documents || documents.length < 0) return res.status(400).json({ error: "Please upload at least 2 PDFs" });
         
-        mergedDocument = await coreService.mergeDocuments(documents)
+        mergedDocument = await coreService.mergePdf(documents)
         
         res.setHeader("Content-Type", "application/pdf")
         res.setHeader("Content-Disposition", "attachment; filename=merged.pdf")
@@ -38,7 +40,7 @@ export const splitDocument = async (req: Request, res: Response)=>{
 
         if (!document) return res.status(400).json({ error: "Please upload a PDF" });
 
-        const splitDocuments = await coreService.splitDocument(document, ranges)
+        const splitDocuments = await coreService.splitPdf(document, ranges)
        
         return res.send(splitDocuments)
 
@@ -65,7 +67,7 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
 
         if (!document) return res.status(400).json({ error: "Please upload a PDF" });
 
-        const deletedPagesDocument = await coreService.deletePages(document, ranges)
+        const deletedPagesDocument = await coreService.deletePagesFromPdf(document, ranges)
        
         res.setHeader("Content-Type", "application/pdf")
         res.setHeader("Content-Disposition", "attachment; filename=deleted_pages_document.pdf")
@@ -74,6 +76,30 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
 
     } catch (error) {
         logger.error(error)
-        res.status(500).send({ error: "Failed to split PDF" })
+        res.status(500).send({ error: "Failed to delete pages from PDF" })
+    }
+}
+
+export const compressDocument = async (req: Request, res: Response)=>{
+    try {
+        const document = req.file as Express.Multer.File;
+        const rawData = req.body?.data
+
+        if (!rawData) return res.status(400).json({ error: "Please provide the quality." });
+
+        const data = JSON.parse(rawData)
+        const quality = data?.quality as string
+
+        if (!quality) return res.status(400).json({ error: "Please provide a valid quality." });
+
+        const compressedFile = await coreService.compressPdf(document, quality)
+
+        res.setHeader("Content-Type", "application/pdf")
+        res.setHeader("Content-Disposition", `attachment; filename=compressed_${quality}_document.pdf`)
+        return res.send(compressedFile)
+
+    } catch (error) {
+        logger.error(error)
+        res.status(500).send({ error: "Failed to compress PDF" })
     }
 }
