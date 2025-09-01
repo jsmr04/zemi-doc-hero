@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as coreService from "./core.service";
 import { logger } from "@/plugins/winston";
-import { SplitDocumentSchema } from "./core.schema";
+import { SplitDocumentSchema, DeletePagesSchema, CompressDocumentSchema } from "./core.schema";
 
 export const mergeDocuments = async (req: Request, res: Response)=>{
     let mergedDocument: Uint8Array<ArrayBufferLike>
@@ -27,20 +27,12 @@ export const splitDocument = async (req: Request, res: Response)=>{
         if (!document) return res.status(400).json({ error: "Please upload a PDF." });
 
         const rawData = req.body?.data        
-        if (!rawData) return res.status(400).json({ error: "Please provide the ranges." });
+        // if (!rawData) return res.status(400).json({ error: "Please provide the ranges." });
 
         const parsed = SplitDocumentSchema.safeParse(JSON.parse(rawData))
 
-        if (!parsed.success) return res.status(400).json({ error: "Invalid ranges", details: parsed.error.format() });
+        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
         const { ranges } = parsed.data
-
-        // const data = JSON.parse(rawData)
-        // const ranges = data?.ranges as number[][]
-
-        // if (!ranges || ranges.length === 0) return res.status(400).json({ error: "Please provide the ranges." });
-        
-        // const isRangeValid = ranges.every((ranges: number[]) => ranges[0] <= ranges[1])
-        // if (!isRangeValid) return res.status(400).json({ error: "Please provide a valid range." });
 
         const splitDocuments = await coreService.splitPdf(document, ranges)
        
@@ -55,19 +47,14 @@ export const splitDocument = async (req: Request, res: Response)=>{
 export const deletePagesFromDocument = async (req: Request, res: Response)=>{
     try {
         const document = req.file as Express.Multer.File;
-        const rawData = req.body?.data
-        
-        if (!rawData) return res.status(400).json({ error: "Please provide the ranges." });
-
-        const data = JSON.parse(rawData)
-        const ranges = data?.ranges as number[][]
-
-        if (!ranges || ranges.length === 0) return res.status(400).json({ error: "Please provide the ranges." });
-
-        const isRangeValid = ranges.every((ranges: number[]) => ranges[0] <= ranges[1])
-        if (!isRangeValid) return res.status(400).json({ error: "Please provide a valid range." });
-
         if (!document) return res.status(400).json({ error: "Please upload a PDF." });
+
+        const rawData = req.body?.data
+        // if (!rawData) return res.status(400).json({ error: "Please provide the ranges." });
+
+        const parsed = DeletePagesSchema.safeParse(JSON.parse(rawData))
+        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
+        const { ranges } = parsed.data
 
         const deletedPagesDocument = await coreService.deletePagesFromPdf(document, ranges)
        
@@ -85,14 +72,14 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
 export const compressDocument = async (req: Request, res: Response)=>{
     try {
         const document = req.file as Express.Multer.File;
+        if (!document) return res.status(400).json({ error: "Please upload a PDF." });
+
         const rawData = req.body?.data
+        if (!rawData) return res.status(400).json({ error: "Please provide the data." });
 
-        if (!rawData) return res.status(400).json({ error: "Please provide the quality." });
-
-        const data = JSON.parse(rawData)
-        const quality = data?.quality as string
-
-        if (!quality) return res.status(400).json({ error: "Please provide a valid quality." });
+        const parsed = CompressDocumentSchema.safeParse(JSON.parse(rawData))
+        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
+        const { quality } = parsed.data
 
         const compressedFile = await coreService.compressPdf(document, quality)
 

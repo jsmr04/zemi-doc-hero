@@ -1,13 +1,14 @@
-import { logger } from "@/plugins/winston";
 import fs from "fs";
 import path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { PDFDocument } from "pdf-lib"
+import { logger } from "@/plugins/winston";
+import { FileQuality } from "./core.schema";
 
 const execAsync = promisify(exec);
 
-const QUALITY_CONFIG: Record<string, string> = {
+const QUALITY_CONFIG: Record<FileQuality, string> = {
     "low": "/screen",
     "good-for-ebooks": "/ebook",
     "good": "/printer",
@@ -73,7 +74,7 @@ export const deletePagesFromPdf = async (document: Express.Multer.File, ranges: 
     return pdfFile
 }
 
-export const compressPdf = async (document: Express.Multer.File, quality: string) => {
+export const compressPdf = async (document: Express.Multer.File, quality: FileQuality) => {
     const pdfSettings = QUALITY_CONFIG[quality]
 
     if (!QUALITY_CONFIG[quality]) throw new Error("Invalid quality value.")
