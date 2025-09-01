@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+//TODO: Create middleware for Zop schema validations
+
 export const SplitDocumentSchema = z.object({
     ranges: z.array(
         z.tuple([
