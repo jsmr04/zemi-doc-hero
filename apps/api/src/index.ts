@@ -20,7 +20,7 @@ app.get('/', (req: Request, res: Response) => res.status(200).send({
 }))
 
 // Add routes
-routes.forEach((item: Route) => app.use(API_PREFIX + item.routeName, item.route));
+routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
 
 //Global error logger middleware
 app.use(expressErrorLogger)

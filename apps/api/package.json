@@ -12,6 +12,7 @@
   "author": "jsmr04@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.879.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
@@ -26,6 +27,7 @@
     "pdf-lib": "^1.17.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "zod": "^4.1.5"
   },
