@@ -5,6 +5,14 @@ import { exec } from "child_process";
 import { PDFDocument } from "pdf-lib"
 import { logger } from "@/plugins/winston";
 import { FileQuality } from "./core.schema";
+import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from "@/configs";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Readable } from 'stream';
+
+const s3Client = new S3Client({
+    region: AWS_REGION,
+    profile: AWS_CUSTOM_PROFILE ? AWS_CUSTOM_PROFILE : undefined
+})
 
 const execAsync = promisify(exec);
 
@@ -15,11 +23,39 @@ const QUALITY_CONFIG: Record<FileQuality, string> = {
     "high": "/prepress"
 }
 
-export const mergePdf = async (documents: Express.Multer.File[]) => {
+const readObject = async (documentId: string) => {
+    const objectName = `upload/${documentId}`
+    const { Body } = await s3Client.send(
+        new GetObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: objectName,
+        }),
+    );
+
+    if (!Body || !(Body instanceof Readable)) {
+        throw new Error(`S3 object ${objectName} is not a readable stream`);
+    }
+
+    return streamToBuffer(Body as Readable);
+}
+
+const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream) {
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+    }
+    return Buffer.concat(chunks);
+};
+
+// export const mergePdf = async (documents: Express.Multer.File[]) => {
+export const mergePdf = async (documentIds: string[]) => {
     const mergedPdf = await PDFDocument.create()
 
-    for (let document of documents) {
-        const loadedDocument = await PDFDocument.load(document.buffer)
+    for (let documentId of documentIds) {
+        const document = await readObject(documentId)
+        if (!document) throw new Error('Document not found')
+            
+        const loadedDocument = await PDFDocument.load(document)
         const copiedPages = await mergedPdf.copyPages(loadedDocument, loadedDocument.getPageIndices())
         copiedPages.forEach(page => mergedPdf.addPage(page))
     }

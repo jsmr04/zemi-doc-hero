@@ -6,7 +6,7 @@ const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() })
 
-router.post("/pdf/merge", upload.array('file', 10), coreController.mergeDocuments)
+router.post("/pdf/merge", coreController.mergeDocuments)
 router.post("/pdf/split", upload.single('file'), coreController.splitDocument)
 router.post("/pdf/delete-pages", upload.single('file'), coreController.deletePagesFromDocument)
 router.post("/pdf/compress", upload.single('file'), coreController.compressDocument)
