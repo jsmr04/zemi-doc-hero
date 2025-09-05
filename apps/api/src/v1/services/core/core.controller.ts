@@ -4,17 +4,15 @@ import { logger } from "@/plugins/winston";
 import { MergeDocumentsSchema, SplitDocumentSchema, DeletePagesSchema, CompressDocumentSchema } from "./core.schema";
 
 export const mergeDocuments = async (req: Request, res: Response)=>{
-    let mergedDocument: Uint8Array<ArrayBufferLike>
     try {
         const parsed = MergeDocumentsSchema.safeParse(req.body)
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() })
 
         const { documentIds } = parsed.data
-        mergedDocument = await coreService.mergePdf(documentIds)
-        
-        res.setHeader("Content-Type", "application/pdf")
-        res.setHeader("Content-Disposition", "attachment; filename=merged.pdf")
-        return res.send(Buffer.from(mergedDocument))
+
+        const mergedDocumentPresignedUrl = await coreService.mergePdf(documentIds)
+        const response = { documentUrl: mergedDocumentPresignedUrl }
+        return res.send(response)
 
     } catch (error) {
         logger.error(error)
@@ -50,7 +48,6 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
         if (!document) return res.status(400).json({ error: "Please upload a PDF." });
 
         const rawData = req.body?.data
-        // if (!rawData) return res.status(400).json({ error: "Please provide the ranges." });
 
         const parsed = DeletePagesSchema.safeParse(JSON.parse(rawData))
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });

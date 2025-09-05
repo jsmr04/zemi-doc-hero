@@ -1,22 +1,18 @@
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from "@/configs";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-
-const s3Client = new S3Client({
-    region: AWS_REGION,
-    profile: AWS_CUSTOM_PROFILE ? AWS_CUSTOM_PROFILE : undefined
-})
+import { BUCKET_NAME } from "@/configs";
+import { putObject } from "@/lib/aws/s3";
 
 export const uploadFile = async (document: Express.Multer.File) => {
     const uuid = uuidv4()
-    const objectName = `upload/${uuid}${path.extname(document.originalname)}`
-
-    await s3Client.send(new PutObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: objectName,
-        Body: document.buffer
-    }))
+    const objectName = `${uuid}${path.extname(document.originalname)}`
+    
+    await putObject({
+        bucket: BUCKET_NAME,
+        objectPrefix: 'upload',
+        objectName: objectName,
+        body: document.buffer
+    })
 
     return {
         documentId: uuid,

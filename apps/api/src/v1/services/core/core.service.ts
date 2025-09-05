@@ -1,18 +1,13 @@
 import fs from "fs";
 import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { PDFDocument } from "pdf-lib"
+import { getObject, putObject, streamToBuffer, presignUrlFromExistingObject } from "@/lib/aws/s3";
 import { logger } from "@/plugins/winston";
 import { FileQuality } from "./core.schema";
-import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from "@/configs";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { Readable } from 'stream';
 
-const s3Client = new S3Client({
-    region: AWS_REGION,
-    profile: AWS_CUSTOM_PROFILE ? AWS_CUSTOM_PROFILE : undefined
-})
 
 const execAsync = promisify(exec);
 
@@ -23,45 +18,38 @@ const QUALITY_CONFIG: Record<FileQuality, string> = {
     "high": "/prepress"
 }
 
-const readObject = async (documentId: string) => {
-    const objectName = `upload/${documentId}`
-    const { Body } = await s3Client.send(
-        new GetObjectCommand({
-            Bucket: BUCKET_NAME,
-            Key: objectName,
-        }),
-    );
-
-    if (!Body || !(Body instanceof Readable)) {
-        throw new Error(`S3 object ${objectName} is not a readable stream`);
-    }
-
-    return streamToBuffer(Body as Readable);
-}
-
-const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
-    const chunks: Uint8Array[] = [];
-    for await (const chunk of stream) {
-        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-    }
-    return Buffer.concat(chunks);
-};
-
-// export const mergePdf = async (documents: Express.Multer.File[]) => {
 export const mergePdf = async (documentIds: string[]) => {
     const mergedPdf = await PDFDocument.create()
 
     for (let documentId of documentIds) {
-        const document = await readObject(documentId)
+        const stream = await getObject({
+            objectPrefix: 'upload',
+            objectName: documentId
+        })
+
+        const document = await streamToBuffer(stream)
         if (!document) throw new Error('Document not found')
-            
+
         const loadedDocument = await PDFDocument.load(document)
         const copiedPages = await mergedPdf.copyPages(loadedDocument, loadedDocument.getPageIndices())
         copiedPages.forEach(page => mergedPdf.addPage(page))
     }
 
     const mergedDocument = await mergedPdf.save()
-    return mergedDocument
+
+    const mergedDocumentId = `${uuidv4() + '.pdf'}`
+    await putObject({
+        objectPrefix: 'download',
+        objectName: mergedDocumentId,
+        body: mergedDocument.buffer as any
+    })
+
+    const presignedUrl = await presignUrlFromExistingObject({
+        objectPrefix: 'download',
+        objectName: mergedDocumentId,
+    })
+
+    return presignedUrl
 }
 
 export const splitPdf = async (document: Express.Multer.File, ranges: number[][]) => {
@@ -89,15 +77,15 @@ export const deletePagesFromPdf = async (document: Express.Multer.File, ranges: 
 
     let pagesToKeep: number[] = []
 
-    for (let pageNumber = 0; pageNumber < pageCount; pageNumber++  ){
+    for (let pageNumber = 0; pageNumber < pageCount; pageNumber++) {
         let isDelete = false
-        for (const [start, end] of ranges){
-            if (pageNumber >= start && pageNumber <= end ){
+        for (const [start, end] of ranges) {
+            if (pageNumber >= start && pageNumber <= end) {
                 isDelete = true
             }
         }
 
-        if (!isDelete){
+        if (!isDelete) {
             pagesToKeep.push(pageNumber)
         }
     }

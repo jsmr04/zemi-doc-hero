@@ -1,9 +1,10 @@
 import 'dotenv/config'
 
-export const PORT = process.env.PORT
-export const AWS_REGION = process.env.AWS_REGION
-export const AWS_CUSTOM_PROFILE = process.env.AWS_CUSTOM_PROFILE
-export const BUCKET_NAME = process.env.BUCKET_NAME
+//TODO: Validate environment variables when starting the server
+export const PORT = process.env.PORT!
+export const AWS_REGION = process.env.AWS_REGION!
+export const AWS_CUSTOM_PROFILE = process.env.AWS_CUSTOM_PROFILE!
+export const BUCKET_NAME = process.env.BUCKET_NAME!
 
 export const API_PREFIX = process.env.API_PREFIX
 export const APP_NAME = process.env.APP_NAME
