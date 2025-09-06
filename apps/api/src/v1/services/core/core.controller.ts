@@ -8,12 +8,10 @@ export const mergeDocuments = async (req: Request, res: Response)=>{
         const parsed = MergeDocumentsSchema.safeParse(req.body)
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() })
 
-        const { documentIds } = parsed.data
+        const { objects } = parsed.data
 
-        const mergedDocumentPresignedUrl = await coreService.mergePdf(documentIds)
-        const response = { documentUrl: mergedDocumentPresignedUrl }
-        return res.send(response)
-
+        const url = await coreService.mergePdf(objects)
+        return res.send({ url })
     } catch (error) {
         logger.error(error)
         res.status(500).send({ error: "Failed to merge PDFs." })
@@ -22,20 +20,13 @@ export const mergeDocuments = async (req: Request, res: Response)=>{
 
 export const splitDocument = async (req: Request, res: Response)=>{
     try {
-        const document = req.file as Express.Multer.File;
-        if (!document) return res.status(400).json({ error: "Please upload a PDF." });
-
-        const rawData = req.body?.data        
-
-        const parsed = SplitDocumentSchema.safeParse(JSON.parse(rawData))
+        const parsed = SplitDocumentSchema.safeParse(req.body)
 
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { ranges } = parsed.data
+        const { objectName, ranges } = parsed.data
 
-        const splitDocuments = await coreService.splitPdf(document, ranges)
-       
+        const splitDocuments = await coreService.splitPdf(objectName, ranges)
         return res.send(splitDocuments)
-
     } catch (error) {
         logger.error(error)
         res.status(500).send({ error: "Failed to split PDF." })
@@ -44,22 +35,12 @@ export const splitDocument = async (req: Request, res: Response)=>{
 
 export const deletePagesFromDocument = async (req: Request, res: Response)=>{
     try {
-        const document = req.file as Express.Multer.File;
-        if (!document) return res.status(400).json({ error: "Please upload a PDF." });
-
-        const rawData = req.body?.data
-
-        const parsed = DeletePagesSchema.safeParse(JSON.parse(rawData))
+        const parsed = SplitDocumentSchema.safeParse(req.body)
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { ranges } = parsed.data
+        const { objectName, ranges } = parsed.data
 
-        const deletedPagesDocument = await coreService.deletePagesFromPdf(document, ranges)
-       
-        res.setHeader("Content-Type", "application/pdf")
-        res.setHeader("Content-Disposition", "attachment; filename=deleted_pages_document.pdf")
-
-        return res.send(deletedPagesDocument)
-
+        const url = await coreService.deletePagesFromPdf(objectName, ranges)
+        return res.send({ url })
     } catch (error) {
         logger.error(error)
         res.status(500).send({ error: "Failed to delete pages from PDF" })
@@ -68,22 +49,12 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
 
 export const compressDocument = async (req: Request, res: Response)=>{
     try {
-        const document = req.file as Express.Multer.File;
-        if (!document) return res.status(400).json({ error: "Please upload a PDF." });
-
-        const rawData = req.body?.data
-        if (!rawData) return res.status(400).json({ error: "Please provide the data." });
-
-        const parsed = CompressDocumentSchema.safeParse(JSON.parse(rawData))
+        const parsed = CompressDocumentSchema.safeParse(req.body)
         if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { quality } = parsed.data
+        const { objectName, quality } = parsed.data
 
-        const compressedFile = await coreService.compressPdf(document, quality)
-
-        res.setHeader("Content-Type", "application/pdf")
-        res.setHeader("Content-Disposition", `attachment; filename=compressed_${quality}_document.pdf`)
-        return res.send(compressedFile)
-
+        const url = await coreService.compressPdf(objectName, quality)
+        return res.send({ url })
     } catch (error) {
         logger.error(error)
         res.status(500).send({ error: "Failed to compress PDF" })

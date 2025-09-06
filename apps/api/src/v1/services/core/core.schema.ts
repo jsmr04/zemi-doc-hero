@@ -3,12 +3,13 @@ import { z } from "zod";
 //TODO: Create middleware for Zop schema validations
 
 export const MergeDocumentsSchema = z.object({
-    documentIds: z.array(z.string())
+    objects: z.array(z.string())
     .nonempty({ error: "Must provide the document ids" })
     .min(2, { error: "Please upload at least 2 PDFs." })
 })
 
 export const SplitDocumentSchema = z.object({
+    objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
     ranges: z.array(
         z.tuple([
             z.number().int(),
@@ -21,6 +22,7 @@ export const SplitDocumentSchema = z.object({
 })
 
 export const DeletePagesSchema = z.object({
+    objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
     ranges: z.array(
         z.tuple([
             z.number().int(),
@@ -34,6 +36,7 @@ export const DeletePagesSchema = z.object({
 
 const FileQualityEnum = z.enum(["low", "good-for-ebooks", "good", "high"])
 export const CompressDocumentSchema = z.object({
+    objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
     quality: FileQualityEnum
 })
 

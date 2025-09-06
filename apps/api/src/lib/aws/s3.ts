@@ -2,7 +2,6 @@ import { Readable } from "stream";
 import { S3Client, PutObjectCommand, GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from "@/configs";
-import { logger } from "@/plugins/winston";
 
 const PRESIGNED_URL_EXPIRES_IN = 3600
 
@@ -53,6 +52,16 @@ export const getObject = async ({ bucket, objectName, objectPrefix }: GetObjectP
     return Body
 }
 
+export const getObjectAndConvertToBuffer = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {
+    const stream = await getObject({
+        objectPrefix: 'upload',
+        objectName
+    })
+
+    const document = await streamToBuffer(stream)
+    return document
+}
+
 export const presignUrlFromExistingObject = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {
     const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`
     const getObjectCommand = new GetObjectCommand({
@@ -62,7 +71,7 @@ export const presignUrlFromExistingObject = async ({ bucket, objectName, objectP
     return await getSignedUrl(s3Client, getObjectCommand, { expiresIn: PRESIGNED_URL_EXPIRES_IN })
 }
 
-export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
     const chunks: Uint8Array[] = [];
 
     for await (const chunk of stream) {
@@ -70,7 +79,3 @@ export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
     }
     return Buffer.concat(chunks);
 };
-
-export const presignUrl = async () => {
-
-}

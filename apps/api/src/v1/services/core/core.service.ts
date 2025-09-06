@@ -4,12 +4,16 @@ import { v4 as uuidv4 } from "uuid";
 import { promisify } from "util";
 import { exec } from "child_process";
 import { PDFDocument } from "pdf-lib"
-import { getObject, putObject, streamToBuffer, presignUrlFromExistingObject } from "@/lib/aws/s3";
+import { getObjectAndConvertToBuffer, putObject, presignUrlFromExistingObject } from "@/lib/aws/s3";
 import { logger } from "@/plugins/winston";
 import { FileQuality } from "./core.schema";
 
-
 const execAsync = promisify(exec);
+
+type SplitResponse = {
+    objectName: string
+    url: string
+}
 
 const QUALITY_CONFIG: Record<FileQuality, string> = {
     "low": "/screen",
@@ -18,17 +22,14 @@ const QUALITY_CONFIG: Record<FileQuality, string> = {
     "high": "/prepress"
 }
 
-export const mergePdf = async (documentIds: string[]) => {
+export const mergePdf = async (objects: string[]) => {
     const mergedPdf = await PDFDocument.create()
 
-    for (let documentId of documentIds) {
-        const stream = await getObject({
+    for (let objectName of objects) {
+        const document = await getObjectAndConvertToBuffer({
             objectPrefix: 'upload',
-            objectName: documentId
+            objectName
         })
-
-        const document = await streamToBuffer(stream)
-        if (!document) throw new Error('Document not found')
 
         const loadedDocument = await PDFDocument.load(document)
         const copiedPages = await mergedPdf.copyPages(loadedDocument, loadedDocument.getPageIndices())
@@ -52,9 +53,14 @@ export const mergePdf = async (documentIds: string[]) => {
     return presignedUrl
 }
 
-export const splitPdf = async (document: Express.Multer.File, ranges: number[][]) => {
-    let splitDocuments: Uint8Array<ArrayBufferLike>[] = []
-    const loadedDocument = await PDFDocument.load(document.buffer)
+export const splitPdf = async (objectName: string, ranges: number[][]) => {
+    let splitDocuments: SplitResponse[] = []
+    const document = await getObjectAndConvertToBuffer({
+        objectPrefix: 'upload',
+        objectName
+    })
+
+    const loadedDocument = await PDFDocument.load(document)
 
     for (const [start, end] of ranges) {
         const newPdf = await PDFDocument.create()
@@ -64,15 +70,33 @@ export const splitPdf = async (document: Express.Multer.File, ranges: number[][]
         const copiedPages = await newPdf.copyPages(loadedDocument, pageIndices);
         copiedPages.forEach((page) => newPdf.addPage(page));
 
+        const mergedDocumentId = `${uuidv4() + '.pdf'}`
         const pdfFile = await newPdf.save()
-        splitDocuments.push(pdfFile)
+
+        await putObject({
+            objectPrefix: 'download',
+            objectName: mergedDocumentId,
+            body: pdfFile.buffer as any
+        })
+
+        const presignedUrl = await presignUrlFromExistingObject({
+            objectPrefix: 'download',
+            objectName: mergedDocumentId,
+        })
+
+        splitDocuments.push({ objectName: mergedDocumentId, url: presignedUrl })
     }
 
     return splitDocuments
 }
 
-export const deletePagesFromPdf = async (document: Express.Multer.File, ranges: number[][]) => {
-    const loadedDocument = await PDFDocument.load(document.buffer)
+export const deletePagesFromPdf = async (objectName: string, ranges: number[][]) => {
+    const document = await getObjectAndConvertToBuffer({
+        objectPrefix: 'upload',
+        objectName
+    })
+
+    const loadedDocument = await PDFDocument.load(document)
     const pageCount = loadedDocument.getPageCount()
 
     let pagesToKeep: number[] = []
@@ -95,13 +119,30 @@ export const deletePagesFromPdf = async (document: Express.Multer.File, ranges: 
     copiedPages.forEach((page) => newPdf.addPage(page));
     const pdfFile = await newPdf.save()
 
-    return pdfFile
+    const documentId = `${uuidv4() + '.pdf'}`
+    await putObject({
+        objectPrefix: 'download',
+        objectName: documentId,
+        body: pdfFile.buffer as any
+    })
+
+    const presignedUrl = await presignUrlFromExistingObject({
+        objectPrefix: 'download',
+        objectName: documentId,
+    })
+
+    return presignedUrl
 }
 
-export const compressPdf = async (document: Express.Multer.File, quality: FileQuality) => {
+export const compressPdf = async (objectName: string, quality: FileQuality) => {
     const pdfSettings = QUALITY_CONFIG[quality]
 
     if (!QUALITY_CONFIG[quality]) throw new Error("Invalid quality value.")
+
+    const document = await getObjectAndConvertToBuffer({
+        objectPrefix: 'upload',
+        objectName
+    })
 
     const dirPath = path.join(__dirname, '../../../../tmp/compress')
     const inputPath = path.join(dirPath, `input-${Date.now()}.pdf`)
@@ -109,17 +150,30 @@ export const compressPdf = async (document: Express.Multer.File, quality: FileQu
 
     fs.mkdirSync(dirPath, { recursive: true });
 
-    fs.writeFileSync(inputPath, document.buffer)
+    fs.writeFileSync(inputPath, document)
 
     const cmd = `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=${pdfSettings} -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${outputPath}" "${inputPath}"`;
 
     await execAsync(cmd);
     logger.info(`Compressed PDF saved to ${outputPath}`);
 
-    // Remove input file
+    const pdfFile = fs.readFileSync(outputPath)
+
+    const documentId = `${uuidv4() + '.pdf'}`
+    await putObject({
+        objectPrefix: 'download',
+        objectName: documentId,
+        body: pdfFile.buffer as any
+    })
+
+    const presignedUrl = await presignUrlFromExistingObject({
+        objectPrefix: 'download',
+        objectName: documentId,
+    })
+
+    // Clean up
     fs.unlinkSync(inputPath)
+    fs.unlinkSync(outputPath)
 
-    const compressedFile = fs.readFileSync(outputPath)
-
-    return compressedFile
+    return presignedUrl
 }
