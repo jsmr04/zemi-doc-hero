@@ -54,6 +54,7 @@ export const compressDocument = async (req: Request, res: Response)=>{
         const { objectName, quality } = parsed.data
 
         const url = await coreService.compressPdf(objectName, quality)
+
         return res.send({ url })
     } catch (error) {
         logger.error(error)

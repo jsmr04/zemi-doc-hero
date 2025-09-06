@@ -1,21 +1,15 @@
-import fs from "fs";
-import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { promisify } from "util";
-import { exec } from "child_process";
 import { PDFDocument } from "pdf-lib"
-import { getObjectAndConvertToBuffer, putObject, presignUrlFromExistingObject } from "@/lib/aws/s3";
-import { logger } from "@/plugins/winston";
+import * as s3 from "@/lib/aws/s3";
+import * as ghostscript from "@/lib/ghostscript";
 import { FileQuality } from "./core.schema";
-
-const execAsync = promisify(exec);
 
 type SplitResponse = {
     objectName: string
     url: string
 }
 
-const QUALITY_CONFIG: Record<FileQuality, string> = {
+const QUALITY_CONFIG: Record<FileQuality, ghostscript.CompressQuality> = {
     "low": "/screen",
     "good-for-ebooks": "/ebook",
     "good": "/printer",
@@ -26,7 +20,7 @@ export const mergePdf = async (objects: string[]) => {
     const mergedPdf = await PDFDocument.create()
 
     for (let objectName of objects) {
-        const document = await getObjectAndConvertToBuffer({
+        const document = await s3.getObjectAndConvertToBuffer({
             objectPrefix: 'upload',
             objectName
         })
@@ -39,13 +33,13 @@ export const mergePdf = async (objects: string[]) => {
     const mergedDocument = await mergedPdf.save()
 
     const mergedDocumentId = `${uuidv4() + '.pdf'}`
-    await putObject({
+    await s3.putObject({
         objectPrefix: 'download',
         objectName: mergedDocumentId,
         body: mergedDocument.buffer as any
     })
 
-    const presignedUrl = await presignUrlFromExistingObject({
+    const presignedUrl = await s3.presignUrlFromExistingObject({
         objectPrefix: 'download',
         objectName: mergedDocumentId,
     })
@@ -55,7 +49,7 @@ export const mergePdf = async (objects: string[]) => {
 
 export const splitPdf = async (objectName: string, ranges: number[][]) => {
     let splitDocuments: SplitResponse[] = []
-    const document = await getObjectAndConvertToBuffer({
+    const document = await s3.getObjectAndConvertToBuffer({
         objectPrefix: 'upload',
         objectName
     })
@@ -73,13 +67,13 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
         const mergedDocumentId = `${uuidv4() + '.pdf'}`
         const pdfFile = await newPdf.save()
 
-        await putObject({
+        await s3.putObject({
             objectPrefix: 'download',
             objectName: mergedDocumentId,
             body: pdfFile.buffer as any
         })
 
-        const presignedUrl = await presignUrlFromExistingObject({
+        const presignedUrl = await s3.presignUrlFromExistingObject({
             objectPrefix: 'download',
             objectName: mergedDocumentId,
         })
@@ -91,7 +85,7 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
 }
 
 export const deletePagesFromPdf = async (objectName: string, ranges: number[][]) => {
-    const document = await getObjectAndConvertToBuffer({
+    const document = await s3.getObjectAndConvertToBuffer({
         objectPrefix: 'upload',
         objectName
     })
@@ -120,13 +114,13 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
     const pdfFile = await newPdf.save()
 
     const documentId = `${uuidv4() + '.pdf'}`
-    await putObject({
+    await s3.putObject({
         objectPrefix: 'download',
         objectName: documentId,
         body: pdfFile.buffer as any
     })
 
-    const presignedUrl = await presignUrlFromExistingObject({
+    const presignedUrl = await s3.presignUrlFromExistingObject({
         objectPrefix: 'download',
         objectName: documentId,
     })
@@ -135,45 +129,34 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
 }
 
 export const compressPdf = async (objectName: string, quality: FileQuality) => {
-    const pdfSettings = QUALITY_CONFIG[quality]
+    const compressQuality = QUALITY_CONFIG[quality]
 
     if (!QUALITY_CONFIG[quality]) throw new Error("Invalid quality value.")
 
-    const document = await getObjectAndConvertToBuffer({
+    const document = await s3.getObjectAndConvertToBuffer({
         objectPrefix: 'upload',
         objectName
     })
 
-    const dirPath = path.join(__dirname, '../../../../tmp/compress')
-    const inputPath = path.join(dirPath, `input-${Date.now()}.pdf`)
-    const outputPath = path.join(dirPath, `output-${Date.now()}.pdf`)
-
-    fs.mkdirSync(dirPath, { recursive: true });
-
-    fs.writeFileSync(inputPath, document)
-
-    const cmd = `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=${pdfSettings} -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${outputPath}" "${inputPath}"`;
-
-    await execAsync(cmd);
-    logger.info(`Compressed PDF saved to ${outputPath}`);
-
-    const pdfFile = fs.readFileSync(outputPath)
+    const compressedDocument = await ghostscript.compress({ 
+        fileType: 'PDF', 
+        quality: compressQuality, 
+        buffer: document
+    })
 
     const documentId = `${uuidv4() + '.pdf'}`
-    await putObject({
+    await s3.putObject({
         objectPrefix: 'download',
         objectName: documentId,
-        body: pdfFile.buffer as any
+        body: compressedDocument.buffer as any
     })
 
-    const presignedUrl = await presignUrlFromExistingObject({
+    const presignedUrl = await s3.presignUrlFromExistingObject({
         objectPrefix: 'download',
         objectName: documentId,
     })
 
-    // Clean up
-    fs.unlinkSync(inputPath)
-    fs.unlinkSync(outputPath)
+
 
     return presignedUrl
 }
