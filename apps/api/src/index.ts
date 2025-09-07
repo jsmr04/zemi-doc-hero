@@ -6,6 +6,8 @@ import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
 import { S3Client } from '@aws-sdk/client-s3';
 
+const test: any;
+
 //Create express instance
 const app = express();
 
