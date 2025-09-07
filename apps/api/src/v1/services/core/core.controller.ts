@@ -1,15 +1,11 @@
 import { Request, Response } from "express";
 import * as coreService from "./core.service";
 import { logger } from "@/plugins/winston";
-import { MergeDocumentsSchema, SplitDocumentSchema, DeletePagesSchema, CompressDocumentSchema } from "./core.schema";
+import { MergeDocuments, SplitDocument, DeletePages, CompressDocument } from "./core.schema";
 
-export const mergeDocuments = async (req: Request, res: Response)=>{
+export const mergeDocuments = async (req: Request<{}, {}, MergeDocuments["body"]>, res: Response) => {
     try {
-        const parsed = MergeDocumentsSchema.safeParse(req.body)
-        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() })
-
-        const { objects } = parsed.data
-
+        const { objects } = req.body
         const url = await coreService.mergePdf(objects)
         return res.send({ url })
     } catch (error) {
@@ -18,13 +14,9 @@ export const mergeDocuments = async (req: Request, res: Response)=>{
     }
 }
 
-export const splitDocument = async (req: Request, res: Response)=>{
+export const splitDocument = async (req: Request<{},{},SplitDocument["body"]>, res: Response) => {
     try {
-        const parsed = SplitDocumentSchema.safeParse(req.body)
-
-        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { objectName, ranges } = parsed.data
-
+        const { objectName, ranges } = req.body
         const splitDocuments = await coreService.splitPdf(objectName, ranges)
         return res.send(splitDocuments)
     } catch (error) {
@@ -33,12 +25,9 @@ export const splitDocument = async (req: Request, res: Response)=>{
     }
 }
 
-export const deletePagesFromDocument = async (req: Request, res: Response)=>{
+export const deletePagesFromDocument = async (req: Request<{},{},DeletePages["body"]>, res: Response) => {
     try {
-        const parsed = SplitDocumentSchema.safeParse(req.body)
-        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { objectName, ranges } = parsed.data
-
+        const { objectName, ranges } = req.body
         const url = await coreService.deletePagesFromPdf(objectName, ranges)
         return res.send({ url })
     } catch (error) {
@@ -47,14 +36,10 @@ export const deletePagesFromDocument = async (req: Request, res: Response)=>{
     }
 }
 
-export const compressDocument = async (req: Request, res: Response)=>{
+export const compressDocument = async (req: Request<{},{},CompressDocument["body"]>, res: Response) => {
     try {
-        const parsed = CompressDocumentSchema.safeParse(req.body)
-        if (!parsed.success) return res.status(400).json({ error: "Invalid input.", details: parsed.error.format() });
-        const { objectName, quality } = parsed.data
-
+        const { objectName, quality } = req.body
         const url = await coreService.compressPdf(objectName, quality)
-
         return res.send({ url })
     } catch (error) {
         logger.error(error)

@@ -1,7 +1,7 @@
 import express from "express";
 import * as todoController from "./todo.controller";
 import { checkTodoId, checkTodoBody } from "./todo.validations";
-import { auth } from "../../../middlewares/authorization";
+import { auth } from "../../../middleware/authorization";
 
 const router = express.Router();
 
