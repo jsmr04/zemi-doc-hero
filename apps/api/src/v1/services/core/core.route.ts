@@ -1,5 +1,4 @@
 import express from 'express';
-import multer from 'multer';
 import { ValidateInput } from '@/middleware';
 import * as coreController from './core.controller';
 import {
@@ -10,8 +9,6 @@ import {
 } from './core.schema';
 
 const router = express.Router();
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   '/pdf/merge',

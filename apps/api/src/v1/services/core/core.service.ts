@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 import { PDFDocument } from 'pdf-lib';
 import * as s3 from '@/lib/aws/s3';
 import * as ghostscript from '@/lib/ghostscript';
@@ -39,7 +40,7 @@ export const mergePdf = async (objects: string[]) => {
   await s3.putObject({
     objectPrefix: 'download',
     objectName: mergedDocumentId,
-    body: mergedDocument.buffer as any,
+    body: mergedDocument.buffer as StreamingBlobPayloadInputTypes,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -76,7 +77,7 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
     await s3.putObject({
       objectPrefix: 'download',
       objectName: mergedDocumentId,
-      body: pdfFile.buffer as any,
+      body: pdfFile.buffer as StreamingBlobPayloadInputTypes,
     });
 
     const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -126,7 +127,7 @@ export const deletePagesFromPdf = async (
   await s3.putObject({
     objectPrefix: 'download',
     objectName: documentId,
-    body: pdfFile.buffer as any,
+    body: pdfFile.buffer as StreamingBlobPayloadInputTypes,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -157,7 +158,7 @@ export const compressPdf = async (objectName: string, quality: FileQuality) => {
   await s3.putObject({
     objectPrefix: 'download',
     objectName: documentId,
-    body: compressedDocument.buffer as any,
+    body: compressedDocument.buffer as StreamingBlobPayloadInputTypes,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({

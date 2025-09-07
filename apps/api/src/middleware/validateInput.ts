@@ -18,6 +18,7 @@ const validateInpunt =
     }
 
     req.body = parsed.data.body ?? req.body;
+    //eslint-disable-next-line
     req.params = (parsed.data.params ?? req.params) as any;
 
     next();

@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
-import expressListEndpoints from 'express-list-endpoints';
-import { PORT, API_PREFIX } from '@/configs';
+import { PORT } from '@/configs';
 import { plugins } from '@/plugins';
 import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';

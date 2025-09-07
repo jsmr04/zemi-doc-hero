@@ -1,9 +1,9 @@
 import { Readable } from 'stream';
+import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
-  GetObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from '@/configs';
@@ -19,7 +19,7 @@ type ObjectPrefix = 'upload' | 'download';
 
 export type PutObjectParams = {
   bucket?: string;
-  body: any;
+  body: StreamingBlobPayloadInputTypes;
   objectPrefix?: ObjectPrefix;
   objectName?: string;
 };
@@ -72,7 +72,8 @@ export const getObjectAndConvertToBuffer = async ({
   objectPrefix,
 }: GetObjectParams) => {
   const stream = await getObject({
-    objectPrefix: 'upload',
+    bucket,
+    objectPrefix,
     objectName,
   });
 

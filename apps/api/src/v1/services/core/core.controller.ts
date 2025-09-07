@@ -9,7 +9,7 @@ import {
 } from './core.schema';
 
 export const mergeDocuments = async (
-  req: Request<{}, {}, MergeDocuments['body']>,
+  req: Request<unknown, unknown, MergeDocuments['body']>,
   res: Response,
 ) => {
   try {
@@ -23,7 +23,7 @@ export const mergeDocuments = async (
 };
 
 export const splitDocument = async (
-  req: Request<{}, {}, SplitDocument['body']>,
+  req: Request<unknown, unknown, SplitDocument['body']>,
   res: Response,
 ) => {
   try {
@@ -37,7 +37,7 @@ export const splitDocument = async (
 };
 
 export const deletePagesFromDocument = async (
-  req: Request<{}, {}, DeletePages['body']>,
+  req: Request<unknown, unknown, DeletePages['body']>,
   res: Response,
 ) => {
   try {
@@ -51,7 +51,7 @@ export const deletePagesFromDocument = async (
 };
 
 export const compressDocument = async (
-  req: Request<{}, {}, CompressDocument['body']>,
+  req: Request<unknown, unknown, CompressDocument['body']>,
   res: Response,
 ) => {
   try {
