@@ -1,12 +1,12 @@
-import { Readable } from "stream";
+import { Readable } from 'stream';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
   GetObjectCommandOutput,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from "@/configs";
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from '@/configs';
 
 const PRESIGNED_URL_EXPIRES_IN = 3600;
 
@@ -36,7 +36,7 @@ export const putObject = async ({
   body,
   objectPrefix,
 }: PutObjectParams) => {
-  const key = `${objectPrefix ? objectPrefix + "/" : ""}${objectName}`;
+  const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucket || BUCKET_NAME,
     Key: key,
@@ -51,7 +51,7 @@ export const getObject = async ({
   objectName,
   objectPrefix,
 }: GetObjectParams) => {
-  const key = `${objectPrefix ? objectPrefix + "/" : ""}${objectName}`;
+  const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const getObjectCommand = new GetObjectCommand({
     Bucket: bucket || BUCKET_NAME,
     Key: key,
@@ -85,7 +85,7 @@ export const presignUrlFromExistingObject = async ({
   objectName,
   objectPrefix,
 }: GetObjectParams) => {
-  const key = `${objectPrefix ? objectPrefix + "/" : ""}${objectName}`;
+  const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const getObjectCommand = new GetObjectCommand({
     Bucket: bucket || BUCKET_NAME,
     Key: key,

@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import expressListEndpoints from "express-list-endpoints";
-import { PORT, API_PREFIX } from "@/configs";
-import { plugins } from "@/plugins";
-import routes, { Route } from "@/v1/routes";
-import { logger, expressErrorLogger } from "@/plugins/winston";
-import { swaggerMiddleware } from "@/plugins/swagger";
+import expressListEndpoints from 'express-list-endpoints';
+import { PORT, API_PREFIX } from '@/configs';
+import { plugins } from '@/plugins';
+import routes, { Route } from '@/v1/routes';
+import { logger, expressErrorLogger } from '@/plugins/winston';
+import { swaggerMiddleware } from '@/plugins/swagger';
 
 //Create express instance
 const app = express();
@@ -16,7 +16,7 @@ app.use(plugins);
 app.get('/', (req: Request, res: Response) =>
   res.status(200).send({
     uptime: process.uptime(),
-    status: "healthy 🙂 ",
+    status: 'healthy 🙂 ',
     date: new Date(),
   }),
 );

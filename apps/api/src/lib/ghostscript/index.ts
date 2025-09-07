@@ -14,7 +14,7 @@ export type CompressParams = {
 const FILE_TYPE: Record<FileType, string> = {
   PDF: 'pdfwrite',
 };
-const COMPRESS_DIR = path.join(__dirname, "../../../../tmp/compress");
+const COMPRESS_DIR = path.join(__dirname, '../../../../tmp/compress');
 
 const execAsync = promisify(exec);
 

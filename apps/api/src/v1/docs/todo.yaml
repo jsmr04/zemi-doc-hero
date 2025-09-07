@@ -2,17 +2,17 @@ paths:
   /todo/{id}/update:
     put:
       tags:
-      - todo
+        - todo
       summary: Update an existing todo
       operationId: updateTodo
       parameters:
-      - name: id
-        in: path
-        description: ID of todo to modify
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID of todo to modify
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         description: Todo data that needs to be updated
         content:
@@ -38,7 +38,7 @@ paths:
   /todo/add:
     post:
       tags:
-      - todo
+        - todo
       summary: Add a new todo to the list
       operationId: addTodo
       requestBody:
@@ -56,17 +56,17 @@ paths:
   /todo/{id}/delete:
     delete:
       tags:
-      - todo
+        - todo
       summary: Delete an existing todo
       operationId: deleteTodo
       parameters:
-      - name: id
-        in: path
-        description: ID of todo to delele
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID of todo to delele
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         200:
           description: Todo deleted
@@ -79,7 +79,7 @@ paths:
   /todo/:
     get:
       tags:
-      - todo
+        - todo
       summary: Get list of todos
       description: Get list of todos
       operationId: getTodos
@@ -95,25 +95,25 @@ paths:
   /todo/{id}:
     get:
       tags:
-      - todo
+        - todo
       summary: Get todo by a given id
       operationId: getTodoById
       parameters:
-      - name: id
-        in: path
-        description: Id of todo
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: Id of todo
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Todo'
-                  
+                $ref: '#/components/schemas/Todo'
+
 components:
   schemas:
     Todo:

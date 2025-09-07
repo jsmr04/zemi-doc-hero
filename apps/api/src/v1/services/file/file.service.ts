@@ -9,7 +9,7 @@ export const uploadFile = async (document: Express.Multer.File) => {
 
   await s3.putObject({
     bucket: BUCKET_NAME,
-    objectPrefix: "upload",
+    objectPrefix: 'upload',
     objectName: objectName,
     body: document.buffer,
   });

@@ -9,9 +9,9 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-- url: http://localhost:8080
+  - url: http://localhost:8080
 tags:
-- name: todo
-  description: Everything about your todos
-- name: auth
-  description: Authentication service
+  - name: todo
+    description: Everything about your todos
+  - name: auth
+    description: Authentication service

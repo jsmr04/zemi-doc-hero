@@ -18,7 +18,7 @@ export const SplitDocumentSchema = z.object({
     .object({
       objectName: z
         .string()
-        .nonempty({ error: "Please provide the document (object)." }),
+        .nonempty({ error: 'Please provide the document (object).' }),
       ranges: z
         .array(z.tuple([z.number().int(), z.number().int()]))
         .nonempty({ error: 'At least one range is required.' })
@@ -34,7 +34,7 @@ export const DeletePagesSchema = z.object({
     .object({
       objectName: z
         .string()
-        .nonempty({ error: "Please provide the document (object)." }),
+        .nonempty({ error: 'Please provide the document (object).' }),
       ranges: z
         .array(z.tuple([z.number().int(), z.number().int()]))
         .nonempty({ error: 'At least one range is required.' })
@@ -51,7 +51,7 @@ export const CompressDocumentSchema = z.object({
     .object({
       objectName: z
         .string()
-        .nonempty({ error: "Please provide the document (object)." }),
+        .nonempty({ error: 'Please provide the document (object).' }),
       quality: FileQualityEnum,
     })
     .strict(),

@@ -2,7 +2,7 @@ paths:
   /auth/login:
     post:
       tags:
-      - auth
+        - auth
       summary: Authenticate with username and password
       operationId: login
       requestBody:
@@ -16,7 +16,7 @@ paths:
         200:
           description: Login success
           content: {}
-           
+
 components:
   schemas:
     Credentials:
