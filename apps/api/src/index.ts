@@ -7,6 +7,7 @@ import { swaggerMiddleware } from '@/plugins/swagger';
 import { S3Client } from '@aws-sdk/client-s3';
 
 const test: any;
+const test2: any;
 
 //Create express instance
 const app = express();
