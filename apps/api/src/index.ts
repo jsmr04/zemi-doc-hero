@@ -8,6 +8,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 
 const test: any;
 const test2: any;
+const test3: any;
 
 //Create express instance
 const app = express();
