@@ -4,6 +4,7 @@ import { plugins } from '@/plugins';
 import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
+import { S3Client } from '@aws-sdk/client-s3';
 
 //Create express instance
 const app = express();
