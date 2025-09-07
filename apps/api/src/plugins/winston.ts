@@ -1,23 +1,22 @@
-import winston from 'winston'
-import expressWinston from 'express-winston'
+import winston from 'winston';
+import expressWinston from 'express-winston';
 
 const loggerConfig = {
-  transports: [
-    new winston.transports.Console()
-  ],
+  transports: [new winston.transports.Console()],
   format: winston.format.combine(
     winston.format.colorize(),
     winston.format.label({
-      label: `INFO `,
+      label: 'INFO ',
     }),
     winston.format.timestamp({
       format: "MMM-DD-YYYY HH:mm:ss",
     }),
     winston.format.printf(
-      (info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`
-    )
+      (info) =>
+        `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`,
+    ),
   ),
-}
+};
 
 const expressConfig = {
   ...loggerConfig,
@@ -28,26 +27,27 @@ const expressConfig = {
   ignoreRoute: function () {
     return false;
   }, // optional: allows to skip some log messages based on request and/or response
-}
+};
 
 const errorLoggerConfig = {
   ...loggerConfig,
   format: winston.format.combine(
     winston.format.colorize(),
     winston.format.label({
-      label: `ERROR: `,
+      label: 'ERROR: ',
     }),
     winston.format.timestamp({
       format: "MMM-DD-YYYY HH:mm:ss",
     }),
     winston.format.printf(
-      (info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}: ${ JSON.stringify(info.meta)}`
-    )
-  )
-}
+      (info) =>
+        `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}: ${JSON.stringify(info.meta)}`,
+    ),
+  ),
+};
 
 //Logger instance
-export const logger = winston.createLogger(loggerConfig) 
+export const logger = winston.createLogger(loggerConfig);
 
 //Global loggers
 export const expressLogger = expressWinston.logger(expressConfig);

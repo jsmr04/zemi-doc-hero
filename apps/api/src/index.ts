@@ -7,34 +7,35 @@ import { logger, expressErrorLogger } from "@/plugins/winston";
 import { swaggerMiddleware } from "@/plugins/swagger";
 
 //Create express instance
-const app = express()
+const app = express();
 
 //Add server plugins to express
-app.use(plugins)
+app.use(plugins);
 
 //Health check
-app.get('/', (req: Request, res: Response) => res.status(200).send({
+app.get('/', (req: Request, res: Response) =>
+  res.status(200).send({
     uptime: process.uptime(),
     status: "healthy 🙂 ",
-    date: new Date()
-}))
+    date: new Date(),
+  }),
+);
 
 // Add routes
 routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
 
 //Global error logger middleware
-app.use(expressErrorLogger)
+app.use(expressErrorLogger);
 
 //Swagger
-const { path, serve, setup } = swaggerMiddleware
-app.use(path, serve, setup)
+const { path, serve, setup } = swaggerMiddleware;
+app.use(path, serve, setup);
 
 //Start server
 app.listen(PORT, () => {
-    // Print endpoints - NOT WORKING
-    // const endpoints = expressListEndpoints(app);
-    // console.log(endpoints)
+  // Print endpoints - NOT WORKING
+  // const endpoints = expressListEndpoints(app);
+  // console.log(endpoints)
 
-    logger.info(`Listening on ${PORT}`)
-})
-
+  logger.info(`Listening on ${PORT}`);
+});

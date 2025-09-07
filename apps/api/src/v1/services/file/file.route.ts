@@ -1,11 +1,11 @@
-import express from "express";
-import multer from "multer";
-import * as fileController from "./file.controller";
+import express from 'express';
+import multer from 'multer';
+import * as fileController from './file.controller';
 
-const router = express.Router()
+const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() })
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/upload', upload.single('file'), fileController.uploadFile)
+router.post("/upload", upload.single("file"), fileController.uploadFile);
 
-export default router
+export default router;

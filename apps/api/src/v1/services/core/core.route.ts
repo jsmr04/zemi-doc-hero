@@ -1,16 +1,37 @@
-import express from "express";
-import multer from "multer";
-import { ValidateInput } from "@/middleware";
-import * as coreController from "./core.controller";
-import { MergeDocumentsSchema, SplitDocumentSchema, DeletePagesSchema, CompressDocumentSchema } from "./core.schema";
+import express from 'express';
+import multer from 'multer';
+import { ValidateInput } from '@/middleware';
+import * as coreController from './core.controller';
+import {
+  MergeDocumentsSchema,
+  SplitDocumentSchema,
+  DeletePagesSchema,
+  CompressDocumentSchema,
+} from './core.schema';
 
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() })
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.post("/pdf/merge", ValidateInput(MergeDocumentsSchema), coreController.mergeDocuments)
-router.post("/pdf/split", ValidateInput(SplitDocumentSchema), coreController.splitDocument)
-router.post("/pdf/delete-pages", ValidateInput(DeletePagesSchema) , coreController.deletePagesFromDocument)
-router.post("/pdf/compress", ValidateInput(CompressDocumentSchema) , coreController.compressDocument)
+router.post(
+  '/pdf/merge',
+  ValidateInput(MergeDocumentsSchema),
+  coreController.mergeDocuments,
+);
+router.post(
+  '/pdf/split',
+  ValidateInput(SplitDocumentSchema),
+  coreController.splitDocument,
+);
+router.post(
+  '/pdf/delete-pages',
+  ValidateInput(DeletePagesSchema),
+  coreController.deletePagesFromDocument,
+);
+router.post(
+  '/pdf/compress',
+  ValidateInput(CompressDocumentSchema),
+  coreController.compressDocument,
+);
 
-export default router
+export default router;

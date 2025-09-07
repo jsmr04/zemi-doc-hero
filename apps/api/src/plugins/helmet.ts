@@ -1,4 +1,4 @@
-import helmet from 'helmet'
+import helmet from 'helmet';
 
 //INFO: Helmet's documentation https://github.com/helmetjs/helmet
-export default helmet()
+export default helmet();

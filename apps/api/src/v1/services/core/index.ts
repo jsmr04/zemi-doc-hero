@@ -1,1 +1,1 @@
-export { default as coreRoute } from "./core.route";
+export { default as coreRoute } from './core.route';

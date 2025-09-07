@@ -1,11 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const GetTodoByIdDTO = z.object({
-    id: z.number({ error: "Id is required" })
-})
+  id: z.number({ error: 'Id is required' }),
+});
 
-export type GetTodoById = z.infer<typeof GetTodoByIdDTO>
-
+export type GetTodoById = z.infer<typeof GetTodoByIdDTO>;
 
 // //INFO: For documentation, please refer to https://express-validator.github.io/docs/index.html
 // export const checkTodoId = checkSchema({
