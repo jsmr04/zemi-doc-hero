@@ -6,6 +6,7 @@ import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
 
 const test1: any;
+const test2: any;
 
 //Create express instance
 const app = express();
