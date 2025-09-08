@@ -16,10 +16,10 @@
   "lint-staged": {
     "src/**/*.{ts,js}": [
       "npm run eslint:fix",
-      "npm run prettier"
+      "npm run format"
     ],
     "src/**/*.{json,md}": [
-      "npm run prettier"
+      "npm run format"
     ]
   },
   "author": "jsmr04@gmail.com",
