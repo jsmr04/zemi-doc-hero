@@ -4,11 +4,4 @@ import session from './session';
 import helmet from './helmet';
 import { expressLogger } from './winston';
 
-export const plugins = [
-  bodyParser,
-  cors,
-  corsMiddleware,
-  helmet,
-  session,
-  expressLogger,
-];
+export const plugins = [bodyParser, cors, corsMiddleware, helmet, session, expressLogger];

@@ -27,10 +27,7 @@ export const mergePdf = async (objects: string[]) => {
     });
 
     const loadedDocument = await PDFDocument.load(document);
-    const copiedPages = await mergedPdf.copyPages(
-      loadedDocument,
-      loadedDocument.getPageIndices(),
-    );
+    const copiedPages = await mergedPdf.copyPages(loadedDocument, loadedDocument.getPageIndices());
     copiedPages.forEach((page) => mergedPdf.addPage(page));
   }
 
@@ -63,10 +60,7 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
   for (const [start, end] of ranges) {
     const newPdf = await PDFDocument.create();
 
-    const pageIndices = Array.from(
-      { length: end - start + 1 },
-      (_, i) => i + start,
-    );
+    const pageIndices = Array.from({ length: end - start + 1 }, (_, i) => i + start);
 
     const copiedPages = await newPdf.copyPages(loadedDocument, pageIndices);
     copiedPages.forEach((page) => newPdf.addPage(page));
@@ -91,10 +85,7 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
   return splitDocuments;
 };
 
-export const deletePagesFromPdf = async (
-  objectName: string,
-  ranges: number[][],
-) => {
+export const deletePagesFromPdf = async (objectName: string, ranges: number[][]) => {
   const document = await s3.getObjectAndConvertToBuffer({
     objectPrefix: 'upload',
     objectName,

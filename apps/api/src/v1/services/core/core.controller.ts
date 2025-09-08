@@ -1,17 +1,9 @@
 import { Request, Response } from 'express';
 import * as coreService from './core.service';
 import { logger } from '@/plugins/winston';
-import {
-  MergeDocuments,
-  SplitDocument,
-  DeletePages,
-  CompressDocument,
-} from './core.schema';
+import { MergeDocuments, SplitDocument, DeletePages, CompressDocument } from './core.schema';
 
-export const mergeDocuments = async (
-  req: Request<unknown, unknown, MergeDocuments['body']>,
-  res: Response,
-) => {
+export const mergeDocuments = async (req: Request<unknown, unknown, MergeDocuments['body']>, res: Response) => {
   try {
     const { objects } = req.body;
     const url = await coreService.mergePdf(objects);
@@ -22,10 +14,7 @@ export const mergeDocuments = async (
   }
 };
 
-export const splitDocument = async (
-  req: Request<unknown, unknown, SplitDocument['body']>,
-  res: Response,
-) => {
+export const splitDocument = async (req: Request<unknown, unknown, SplitDocument['body']>, res: Response) => {
   try {
     const { objectName, ranges } = req.body;
     const splitDocuments = await coreService.splitPdf(objectName, ranges);
@@ -36,10 +25,7 @@ export const splitDocument = async (
   }
 };
 
-export const deletePagesFromDocument = async (
-  req: Request<unknown, unknown, DeletePages['body']>,
-  res: Response,
-) => {
+export const deletePagesFromDocument = async (req: Request<unknown, unknown, DeletePages['body']>, res: Response) => {
   try {
     const { objectName, ranges } = req.body;
     const url = await coreService.deletePagesFromPdf(objectName, ranges);
@@ -50,10 +36,7 @@ export const deletePagesFromDocument = async (
   }
 };
 
-export const compressDocument = async (
-  req: Request<unknown, unknown, CompressDocument['body']>,
-  res: Response,
-) => {
+export const compressDocument = async (req: Request<unknown, unknown, CompressDocument['body']>, res: Response) => {
   try {
     const { objectName, quality } = req.body;
     const url = await coreService.compressPdf(objectName, quality);

@@ -11,10 +11,7 @@ const loggerConfig = {
     winston.format.timestamp({
       format: 'MMM-DD-YYYY HH:mm:ss',
     }),
-    winston.format.printf(
-      (info) =>
-        `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`,
-    ),
+    winston.format.printf((info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`),
   ),
 };
 
@@ -40,8 +37,7 @@ const errorLoggerConfig = {
       format: 'MMM-DD-YYYY HH:mm:ss',
     }),
     winston.format.printf(
-      (info) =>
-        `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}: ${JSON.stringify(info.meta)}`,
+      (info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}: ${JSON.stringify(info.meta)}`,
     ),
   ),
 };

@@ -1,10 +1,6 @@
 import { Readable } from 'stream';
 import { StreamingBlobPayloadInputTypes } from '@smithy/types';
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from '@/configs';
 
@@ -30,12 +26,7 @@ export type GetObjectParams = {
   objectName?: string;
 };
 
-export const putObject = async ({
-  bucket,
-  objectName,
-  body,
-  objectPrefix,
-}: PutObjectParams) => {
+export const putObject = async ({ bucket, objectName, body, objectPrefix }: PutObjectParams) => {
   const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucket || BUCKET_NAME,
@@ -46,11 +37,7 @@ export const putObject = async ({
   s3Client.send(putObjectCommand);
 };
 
-export const getObject = async ({
-  bucket,
-  objectName,
-  objectPrefix,
-}: GetObjectParams) => {
+export const getObject = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {
   const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const getObjectCommand = new GetObjectCommand({
     Bucket: bucket || BUCKET_NAME,
@@ -66,11 +53,7 @@ export const getObject = async ({
   return Body;
 };
 
-export const getObjectAndConvertToBuffer = async ({
-  bucket,
-  objectName,
-  objectPrefix,
-}: GetObjectParams) => {
+export const getObjectAndConvertToBuffer = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {
   const stream = await getObject({
     bucket,
     objectPrefix,
@@ -81,11 +64,7 @@ export const getObjectAndConvertToBuffer = async ({
   return document;
 };
 
-export const presignUrlFromExistingObject = async ({
-  bucket,
-  objectName,
-  objectPrefix,
-}: GetObjectParams) => {
+export const presignUrlFromExistingObject = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {
   const key = `${objectPrefix ? objectPrefix + '/' : ''}${objectName}`;
   const getObjectCommand = new GetObjectCommand({
     Bucket: bucket || BUCKET_NAME,

@@ -10,7 +10,7 @@
     "build": "tsc && tsc-alias",
     "eslint": "npx eslint .",
     "eslint:fix": "npx eslint . --fix",
-    "prettier": "npx prettier --write .",
+    "format": "npx prettier --write .",
     "prepare": "husky"
   },
   "lint-staged": {

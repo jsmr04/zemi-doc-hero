@@ -16,9 +16,7 @@ export const MergeDocumentsSchema = z.object({
 export const SplitDocumentSchema = z.object({
   body: z
     .object({
-      objectName: z
-        .string()
-        .nonempty({ error: 'Please provide the document (object).' }),
+      objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
       ranges: z
         .array(z.tuple([z.number().int(), z.number().int()]))
         .nonempty({ error: 'At least one range is required.' })
@@ -32,9 +30,7 @@ export const SplitDocumentSchema = z.object({
 export const DeletePagesSchema = z.object({
   body: z
     .object({
-      objectName: z
-        .string()
-        .nonempty({ error: 'Please provide the document (object).' }),
+      objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
       ranges: z
         .array(z.tuple([z.number().int(), z.number().int()]))
         .nonempty({ error: 'At least one range is required.' })
@@ -49,9 +45,7 @@ const FileQualityEnum = z.enum(['low', 'good-for-ebooks', 'good', 'high']);
 export const CompressDocumentSchema = z.object({
   body: z
     .object({
-      objectName: z
-        .string()
-        .nonempty({ error: 'Please provide the document (object).' }),
+      objectName: z.string().nonempty({ error: 'Please provide the document (object).' }),
       quality: FileQualityEnum,
     })
     .strict(),

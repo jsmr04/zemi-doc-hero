@@ -18,11 +18,7 @@ const COMPRESS_DIR = path.join(__dirname, '../../../../tmp/compress');
 
 const execAsync = promisify(exec);
 
-export const compress = async ({
-  fileType,
-  quality,
-  buffer,
-}: CompressParams) => {
+export const compress = async ({ fileType, quality, buffer }: CompressParams) => {
   const inputPath = path.join(COMPRESS_DIR, `input-${Date.now()}.pdf`);
   const outputPath = path.join(COMPRESS_DIR, `output-${Date.now()}.pdf`);
 
