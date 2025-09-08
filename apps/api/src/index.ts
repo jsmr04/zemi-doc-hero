@@ -12,6 +12,7 @@ const test3: any;
 const test4: any;
 const test5: any;
 const test6: any;
+const test7: any;
 
 //Create express instance
 const app = express();

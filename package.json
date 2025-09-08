@@ -1,0 +1,15 @@
+{
+  "name": "zemi-doc-hero",
+  "version": "1.0.0",
+  "description": "Monorepo of Document Hero",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "author": "jsmr04@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

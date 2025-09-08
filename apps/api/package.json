@@ -7,7 +7,20 @@
     "start": "node ./dist/index.js",
     "start:dev": "nodemon",
     "test": "test",
-    "build": "tsc && tsc-alias"
+    "build": "tsc && tsc-alias",
+    "eslint": "npx eslint .",
+    "eslint:fix": "npx eslint . --fix",
+    "prettier": "npx prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,js}": [
+      "npm run eslint:fix",
+      "npm run prettier"
+    ],
+    "src/**/*.{json,md}": [
+      "npm run prettier"
+    ]
   },
   "author": "jsmr04@gmail.com",
   "license": "ISC",
