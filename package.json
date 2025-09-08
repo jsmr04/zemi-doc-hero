@@ -7,6 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "apps/api/src/**/*.{ts,js}": [
+      "npm run eslint:fix",
+      "npm run prettier"
+    ],
+    "apps/api/src/**/*.{json,md}": [
+      "npm run prettier"
+    ]
+  },
   "author": "jsmr04@gmail.com",
   "license": "ISC",
   "devDependencies": {
