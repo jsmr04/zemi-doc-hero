@@ -5,11 +5,6 @@ import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
 
-const test1: any;
-const test2: any;
-const test3: any;
-const test4: any;
-
 //Create express instance
 const app = express();
 

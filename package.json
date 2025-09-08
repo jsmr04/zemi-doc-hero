@@ -19,6 +19,7 @@
   "author": "jsmr04@gmail.com",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2"
   }
 }
