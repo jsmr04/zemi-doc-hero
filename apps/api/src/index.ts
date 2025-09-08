@@ -7,6 +7,7 @@ import { swaggerMiddleware } from '@/plugins/swagger';
 
 const test1: any;
 const test2: any;
+const test3: any;
 
 //Create express instance
 const app = express();
