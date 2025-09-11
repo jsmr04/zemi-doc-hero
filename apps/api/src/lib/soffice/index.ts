@@ -6,6 +6,8 @@ import { logger } from '@/plugins/winston';
 
 type ConvertFile = {
   buffer: Buffer<ArrayBufferLike>;
+  inputFileName: string;
+  outputFileName: string;
 };
 
 const CONVERT_DIR = path.join(__dirname, '../../../../tmp/convert');
@@ -18,22 +20,20 @@ const detectFileType = async (buffer: Uint8Array | ArrayBuffer) => {
   return await fileTypeFromBuffer(buffer);
 };
 
-export const convertFileToPdf = async ({ buffer }: ConvertFile) => {
+export const convertFileToPdf = async ({ buffer, inputFileName, outputFileName }: ConvertFile) => {
   const inputFileType = await detectFileType(buffer);
   if (!inputFileType) throw new Error('Unable to determine the input file type.');
 
-  const fileName = `${Date.now()}.${inputFileType.ext}`;
   const inputDir = `${CONVERT_DIR}/input`;
-  const inputFile = path.join(inputDir, fileName);
+  const inputFile = path.join(inputDir, inputFileName);
   const outputDir = `${CONVERT_DIR}/output`;
-  const outputFile = path.join(outputDir, `${Date.now()}.pdf`);
+  const outputFile = path.join(outputDir, outputFileName);
 
   fs.mkdirSync(inputDir, { recursive: true });
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(inputFile, buffer);
 
   const cmd = `soffice --headless --convert-to ${CONVERT_TO_PDF} --outdir "${outputDir}" "${inputFile}"`;
-  logger.info(cmd);
   const { stdout } = await execAsync(cmd);
   logger.info(stdout);
 

@@ -1,12 +1,14 @@
-import { v4 as uuidv4 } from 'uuid';
 import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 import { PDFDocument } from 'pdf-lib';
 import * as s3 from '@/lib/aws/s3';
 import * as soffice from '@/lib/soffice';
-import { ConvertFrom, ConvertTo } from './convert.schema';
+import { ConvertFrom } from './convert.schema';
 
-export const convertFile = async (objectName: string, from: ConvertFrom, to: ConvertTo) => {
-  const documentId = `${uuidv4()}.pdf`;
+export const convertFile = async (objectName: string, from: ConvertFrom) => {
+  const splitFileName = objectName.split('.');
+  if (splitFileName.length === 0) throw new Error('Invalidate object name');
+  const convertedDocumentId = `${splitFileName[0]}.pdf`;
+
   let convertedFileBuffer = null;
   let presignedUrl = '';
   const fileBuffer = await s3.getObjectAndConvertToBuffer({
@@ -32,17 +34,21 @@ export const convertFile = async (objectName: string, from: ConvertFrom, to: Con
     });
     convertedFileBuffer = await newPdf.save();
   } else {
-    convertedFileBuffer = await soffice.convertFileToPdf({ buffer: fileBuffer });
+    convertedFileBuffer = await soffice.convertFileToPdf({
+      inputFileName: objectName,
+      outputFileName: convertedDocumentId,
+      buffer: fileBuffer,
+    });
   }
   await s3.putObject({
     objectPrefix: 'download',
-    objectName: documentId,
+    objectName: convertedDocumentId,
     body: convertedFileBuffer as unknown as StreamingBlobPayloadInputTypes,
   });
 
   presignedUrl = await s3.presignUrlFromExistingObject({
     objectPrefix: 'download',
-    objectName: documentId,
+    objectName: convertedDocumentId,
   });
 
   return presignedUrl;

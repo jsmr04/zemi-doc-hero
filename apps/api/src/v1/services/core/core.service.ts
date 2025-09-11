@@ -131,6 +131,7 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
 
 export const compressPdf = async (objectName: string, quality: FileQuality) => {
   const compressQuality = QUALITY_CONFIG[quality];
+  const outputObjectName = `${uuidv4() + '.pdf'}`;
 
   if (!QUALITY_CONFIG[quality]) throw new Error('Invalid quality value.');
 
@@ -143,18 +144,19 @@ export const compressPdf = async (objectName: string, quality: FileQuality) => {
     fileType: 'PDF',
     quality: compressQuality,
     buffer: document,
+    inputFileName: objectName,
+    outputFileName: outputObjectName,
   });
 
-  const documentId = `${uuidv4() + '.pdf'}`;
   await s3.putObject({
     objectPrefix: 'download',
-    objectName: documentId,
+    objectName: outputObjectName,
     body: compressedDocument.buffer as unknown as StreamingBlobPayloadInputTypes,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({
     objectPrefix: 'download',
-    objectName: documentId,
+    objectName: outputObjectName,
   });
 
   return presignedUrl;

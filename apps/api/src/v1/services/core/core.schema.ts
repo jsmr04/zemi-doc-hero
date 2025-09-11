@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-//TODO: Create middleware for Zod schema validations
-
 export const MergeDocumentsSchema = z.object({
   body: z
     .object({
