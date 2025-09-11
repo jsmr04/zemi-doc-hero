@@ -15,7 +15,7 @@ type ObjectPrefix = 'upload' | 'download';
 
 export type PutObjectParams = {
   bucket?: string;
-  body: StreamingBlobPayloadInputTypes;
+  body: Buffer<ArrayBufferLike>;
   objectPrefix?: ObjectPrefix;
   objectName?: string;
 };
@@ -31,7 +31,7 @@ export const putObject = async ({ bucket, objectName, body, objectPrefix }: PutO
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucket || BUCKET_NAME,
     Key: key,
-    Body: body,
+    Body: body as StreamingBlobPayloadInputTypes,
   });
 
   s3Client.send(putObjectCommand);

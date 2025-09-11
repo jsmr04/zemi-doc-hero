@@ -1,4 +1,3 @@
-import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 import { PDFDocument } from 'pdf-lib';
 import * as s3 from '@/lib/aws/s3';
 import * as soffice from '@/lib/soffice';
@@ -43,7 +42,7 @@ export const convertFile = async (objectName: string, from: ConvertFrom) => {
   await s3.putObject({
     objectPrefix: 'download',
     objectName: convertedDocumentId,
-    body: convertedFileBuffer as unknown as StreamingBlobPayloadInputTypes,
+    body: convertedFileBuffer as Buffer<ArrayBufferLike>,
   });
 
   presignedUrl = await s3.presignUrlFromExistingObject({
