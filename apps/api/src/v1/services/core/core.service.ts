@@ -36,7 +36,7 @@ export const mergePdf = async (objects: string[]) => {
   await s3.putObject({
     objectPrefix: 'download',
     objectName: mergedDocumentId,
-    body: mergedDocument.buffer as Buffer<ArrayBufferLike>,
+    body: mergedDocument.buffer as unknown as Buffer<ArrayBufferLike>,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -70,7 +70,7 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
     await s3.putObject({
       objectPrefix: 'download',
       objectName: mergedDocumentId,
-      body: pdfFile.buffer as Buffer<ArrayBufferLike>,
+      body: pdfFile.buffer as unknown as Buffer<ArrayBufferLike>,
     });
 
     const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -117,7 +117,7 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
   await s3.putObject({
     objectPrefix: 'download',
     objectName: documentId,
-    body: pdfFile.buffer as Buffer<ArrayBufferLike>,
+    body: pdfFile.buffer as unknown as Buffer<ArrayBufferLike>,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({
@@ -150,7 +150,7 @@ export const compressPdf = async (objectName: string, quality: FileQuality) => {
   await s3.putObject({
     objectPrefix: 'download',
     objectName: outputObjectName,
-    body: compressedDocument.buffer as Buffer<ArrayBufferLike>,
+    body: compressedDocument.buffer as unknown as Buffer<ArrayBufferLike>,
   });
 
   const presignedUrl = await s3.presignUrlFromExistingObject({

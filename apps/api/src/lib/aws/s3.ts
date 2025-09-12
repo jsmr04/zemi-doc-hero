@@ -2,13 +2,16 @@ import { Readable } from 'stream';
 import { StreamingBlobPayloadInputTypes } from '@smithy/types';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { AWS_REGION, AWS_CUSTOM_PROFILE, BUCKET_NAME } from '@/configs';
+import { AWS_REGION, BUCKET_NAME, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID } from '@/configs';
 
 const PRESIGNED_URL_EXPIRES_IN = 3600;
 
 const s3Client = new S3Client({
   region: AWS_REGION,
-  profile: AWS_CUSTOM_PROFILE ? AWS_CUSTOM_PROFILE : undefined,
+  credentials: {
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
 });
 
 type ObjectPrefix = 'upload' | 'download';
