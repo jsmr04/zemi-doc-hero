@@ -30,7 +30,7 @@ export const splitDocument = async (req: Request<unknown, unknown, SplitDocument
     return generateSuccessfulAPIResponse<SplitDocumentResponseData>(res, response);
   } catch (error) {
     logger.error(error);
-    res.status(500).send({ error: 'Unable to split PDF.' });
+    return generateErrorAPIResponse(res, { message: 'Unable to split PDF.' });
   }
 };
 

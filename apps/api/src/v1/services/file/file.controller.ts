@@ -6,7 +6,7 @@ import { FileUploadResponse } from './file.schema';
 
 export const uploadFile = async (req: Request, res: Response) => {
   const document = req.file as Express.Multer.File;
-  if (!document) return res.status(400).json({ error: 'Please upload a file.' });
+  if (!document) return generateErrorAPIResponse(res, { message: 'Please upload a file.' }, 'Bad Request');
 
   try {
     const uploadedFile = await fileService.uploadFile(document);
