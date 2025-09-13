@@ -1,6 +1,6 @@
 import swaggerJsdoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { PORT, API_PREFIX } from '@/configs';
+import { PORT } from '@/configs';
 
 const options: Options = {
   definition: {
@@ -26,7 +26,7 @@ const options: Options = {
 const specs = swaggerJsdoc(options);
 
 export const swaggerMiddleware = {
-  path: `${API_PREFIX}/api-docs`,
+  path: 'v1/api-docs',
   serve: swaggerUi.serve,
   setup: swaggerUi.setup(specs, { explorer: true }),
 };
