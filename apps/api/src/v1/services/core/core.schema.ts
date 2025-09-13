@@ -54,3 +54,12 @@ export type SplitDocument = z.infer<typeof SplitDocumentSchema>;
 export type DeletePages = z.infer<typeof DeletePagesSchema>;
 export type FileQuality = z.infer<typeof FileQualityEnum>;
 export type CompressDocument = z.infer<typeof CompressDocumentSchema>;
+
+export type GenericCoreResponseData = {
+  url: string;
+};
+export type SplitDocumentObject = {
+  objectName: string;
+  url: string;
+};
+export type SplitDocumentResponseData = { files: SplitDocumentObject[] };

@@ -1,6 +1,7 @@
 import { logger } from '@/plugins/winston';
 import { Request, Response, NextFunction } from 'express';
 import { ZodObject } from 'zod';
+import { generateErrorAPIResponse } from '@/helpers/api';
 
 const validateInpunt = (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
   const parsed = schema.safeParse({
@@ -9,11 +10,16 @@ const validateInpunt = (schema: ZodObject) => (req: Request, res: Response, next
   });
 
   if (!parsed.success) {
-    logger.error(JSON.stringify(parsed.error.format()));
-    return res.status(400).json({
-      error: 'Invalid input.',
-      details: parsed.error.format(),
-    });
+    const stringErrorDetails = JSON.stringify(parsed.error.format());
+    logger.error(stringErrorDetails);
+    return generateErrorAPIResponse(
+      res,
+      {
+        message: 'Invalid input.',
+        details: stringErrorDetails,
+      },
+      'Bad Request',
+    );
   }
 
   req.body = parsed.data.body ?? req.body;

@@ -15,7 +15,7 @@ export const uploadFile = async (document: Express.Multer.File) => {
   });
 
   return {
-    object: objectName,
+    objectName: objectName,
     fileName: document.originalname,
   };
 };

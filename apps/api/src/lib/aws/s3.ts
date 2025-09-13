@@ -37,7 +37,7 @@ export const putObject = async ({ bucket, objectName, body, objectPrefix }: PutO
     Body: body as StreamingBlobPayloadInputTypes,
   });
 
-  s3Client.send(putObjectCommand);
+  return await s3Client.send(putObjectCommand);
 };
 
 export const getObject = async ({ bucket, objectName, objectPrefix }: GetObjectParams) => {

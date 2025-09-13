@@ -1,16 +1,24 @@
 import { Request, Response } from 'express';
 import * as coreService from './core.service';
 import { logger } from '@/plugins/winston';
-import { MergeDocuments, SplitDocument, DeletePages, CompressDocument } from './core.schema';
+import {
+  MergeDocuments,
+  SplitDocument,
+  DeletePages,
+  CompressDocument,
+  SplitDocumentResponseData,
+  GenericCoreResponseData,
+} from './core.schema';
+import { generateSuccessfulAPIResponse, generateErrorAPIResponse } from '@/helpers/api';
 
 export const mergeDocuments = async (req: Request<unknown, unknown, MergeDocuments['body']>, res: Response) => {
   try {
     const { objects } = req.body;
     const url = await coreService.mergePdf(objects);
-    return res.send({ url });
+    return generateSuccessfulAPIResponse<GenericCoreResponseData>(res, { url });
   } catch (error) {
     logger.error(error);
-    res.status(500).send({ error: 'Failed to merge PDFs.' });
+    return generateErrorAPIResponse(res, { message: 'Unable to merge PDFs.' });
   }
 };
 
@@ -18,10 +26,11 @@ export const splitDocument = async (req: Request<unknown, unknown, SplitDocument
   try {
     const { objectName, ranges } = req.body;
     const splitDocuments = await coreService.splitPdf(objectName, ranges);
-    return res.send(splitDocuments);
+    const response = { files: splitDocuments };
+    return generateSuccessfulAPIResponse<SplitDocumentResponseData>(res, response);
   } catch (error) {
     logger.error(error);
-    res.status(500).send({ error: 'Failed to split PDF.' });
+    res.status(500).send({ error: 'Unable to split PDF.' });
   }
 };
 
@@ -29,10 +38,10 @@ export const deletePagesFromDocument = async (req: Request<unknown, unknown, Del
   try {
     const { objectName, ranges } = req.body;
     const url = await coreService.deletePagesFromPdf(objectName, ranges);
-    return res.send({ url });
+    return generateSuccessfulAPIResponse<GenericCoreResponseData>(res, { url });
   } catch (error) {
     logger.error(error);
-    res.status(500).send({ error: 'Failed to delete pages from PDF' });
+    return generateErrorAPIResponse(res, { message: 'Unable to delete pages from PDF.' });
   }
 };
 
@@ -40,9 +49,9 @@ export const compressDocument = async (req: Request<unknown, unknown, CompressDo
   try {
     const { objectName, quality } = req.body;
     const url = await coreService.compressPdf(objectName, quality);
-    return res.send({ url });
+    return generateSuccessfulAPIResponse<GenericCoreResponseData>(res, { url });
   } catch (error) {
     logger.error(error);
-    res.status(500).send({ error: 'Failed to compress PDF' });
+    return generateErrorAPIResponse(res, { message: 'Unable to compress the PDF.' });
   }
 };

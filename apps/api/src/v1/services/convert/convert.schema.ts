@@ -16,3 +16,7 @@ export const ConvertSchema = z.object({
 export type ConvertFrom = z.infer<typeof FromEnum>;
 export type ConvertTo = z.infer<typeof ToEnum>;
 export type Convert = z.infer<typeof ConvertSchema>;
+
+export type GenericConvertResponseData = {
+  url: string;
+};
