@@ -1,0 +1,312 @@
+# Doc-Hero Project Rules
+
+## Project Overview
+Doc-Hero is a PDF processing service that provides tools for PDF manipulation including merge, split, convert, compress, and delete pages operations. The project is a monorepo with the API service located in `/apps/api`.
+
+## Architecture & Structure
+
+### Monorepo Structure
+- `/apps/api` - Main API service
+- `/apps/web` - Web frontend (planned)
+- `/apps/mobile` - Mobile app (planned)
+- `/packages` - Shared packages
+- `/infra` - Infrastructure as code
+
+### API Service Architecture
+- **Services**: Business logic layer (`/src/v1/services/`)
+- **Controllers**: Request/response handling (`*controller.ts`)
+- **Routes**: API endpoint definitions (`*route.ts`)
+- **Schemas**: Input validation using Zod (`*schema.ts`)
+- **Services**: Core business logic (`*service.ts`)
+- **Middleware**: Cross-cutting concerns (`/src/middleware/`)
+- **Plugins**: Express middleware configuration (`/src/plugins/`)
+- **Lib**: External service integrations (`/src/lib/`)
+
+## Coding Standards
+
+### TypeScript
+- Use strict TypeScript configuration
+- Prefer explicit types over `any`
+- Use path aliases (`@/*`) for imports
+- Export types alongside implementations
+- Use Zod for runtime validation
+
+### File Naming
+- Use kebab-case for files: `convert.service.ts`
+- Use PascalCase for classes and types
+- Use camelCase for functions and variables
+- Use UPPER_CASE for constants
+
+### Import Organization
+```typescript
+// 1. Node modules
+import express from 'express';
+import { z } from 'zod';
+
+// 2. Internal modules (using path aliases)
+import { logger } from '@/plugins/winston';
+import { ConvertSchema } from './convert.schema';
+
+// 3. Relative imports
+import * as convertService from './convert.service';
+```
+
+### Error Handling
+- Use structured error responses
+- Log errors with context using Winston
+- Return consistent error format:
+```typescript
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+```
+
+### Validation
+- Use Zod schemas for all input validation
+- Validate environment variables on startup
+- Add file type and size validation for uploads
+- Use `validateInput` middleware consistently
+
+## API Design Patterns
+
+### Route Structure
+```typescript
+// POST /v1/convert
+router.post('/', validateInput(ConvertSchema), convertController.convert);
+```
+
+### Controller Pattern
+```typescript
+export const convert = async (req: Request<unknown, unknown, Convert['body']>, res: Response) => {
+  const { objectName, from } = req.body;
+  
+  try {
+    const result = await convertService.convertFile(objectName, from);
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    logger.error('Convert error:', error);
+    return res.status(400).json({ success: false, error: error.message });
+  }
+};
+```
+
+### Service Pattern
+- Keep controllers thin, business logic in services
+- Use dependency injection where possible
+- Handle external service calls in services
+- Return structured data from services
+
+## PDF Processing Guidelines
+
+### Supported Operations
+- **Convert**: Images (JPG, PNG) and Office docs (DOCX, DOC, PPTX, PPT, XLSX, XLS) to PDF
+- **Merge**: Multiple PDFs into single document
+- **Split**: PDF into multiple documents by page ranges
+- **Delete Pages**: Remove specific page ranges
+- **Compress**: Reduce file size with quality options
+
+### File Handling
+- Use AWS S3 for file storage with presigned URLs
+- Implement proper cleanup for temporary files
+- Validate file types and sizes before processing
+- Use streaming for large file operations
+
+### Image to PDF Conversion
+- Preserve aspect ratios
+- Use PDF-lib for image embedding
+- Support JPG and PNG formats
+
+## Security Requirements
+
+### File Upload Security
+- Validate file types beyond extension checking
+- Implement file size limits
+- Scan for malicious content (future enhancement)
+- Use secure file naming (UUIDs)
+
+### API Security
+- Use Helmet for security headers
+- Implement CORS properly
+- Add rate limiting (future enhancement)
+- Implement authentication/authorization (future enhancement)
+
+### Environment Security
+- Never commit secrets to version control
+- Validate all environment variables
+- Use secure defaults
+- Implement proper secret rotation
+
+## AWS Integration
+
+### S3 Usage
+- Use separate prefixes for upload/download
+- Implement proper IAM permissions
+- Use presigned URLs for secure access
+- Set appropriate expiration times
+
+### Error Handling
+- Handle AWS service errors gracefully
+- Implement retry logic for transient failures
+- Log AWS operations for debugging
+
+## Docker & Deployment
+
+### Dockerfile Best Practices
+- Use multi-stage builds
+- Run as non-root user
+- Install only necessary packages
+- Use specific base image versions
+
+### Environment Configuration
+- Use environment variables for configuration
+- Provide sensible defaults
+- Document all required environment variables
+- Validate configuration on startup
+
+## Testing Guidelines
+
+### Unit Tests
+- Test business logic in services
+- Mock external dependencies
+- Test error scenarios
+- Aim for high coverage
+
+### Integration Tests
+- Test API endpoints
+- Test file processing workflows
+- Test AWS integrations
+- Test error handling
+
+## Documentation
+
+### API Documentation
+- Use Swagger/OpenAPI for API docs
+- Document all endpoints with examples
+- Include error response schemas
+- Keep documentation up to date
+
+### Code Documentation
+- Use JSDoc for complex functions
+- Document business logic decisions
+- Include usage examples
+- Document environment setup
+
+## Performance Guidelines
+
+### File Processing
+- Use streaming for large files
+- Implement progress tracking for long operations
+- Consider background job processing
+- Optimize memory usage
+
+### API Performance
+- Implement proper caching strategies
+- Use connection pooling
+- Monitor response times
+- Implement rate limiting
+
+## Monitoring & Logging
+
+### Logging
+- Use structured logging with Winston
+- Include request context in logs
+- Log all errors with stack traces
+- Use appropriate log levels
+
+### Monitoring
+- Implement health checks
+- Monitor API response times
+- Track error rates
+- Monitor AWS service usage
+
+## Future Enhancements
+
+### Planned Features
+- User authentication and authorization
+- File management and history
+- Batch processing capabilities
+- Real-time progress updates
+- Advanced PDF manipulation tools
+
+### Technical Debt
+- Standardize error responses
+- Add comprehensive input validation
+- Implement proper cleanup mechanisms
+- Add comprehensive test coverage
+
+## Code Review Guidelines
+
+### Review Checklist
+- [ ] Follows TypeScript best practices
+- [ ] Includes proper error handling
+- [ ] Has appropriate logging
+- [ ] Includes input validation
+- [ ] Follows naming conventions
+- [ ] Has proper documentation
+- [ ] Includes tests
+- [ ] Handles edge cases
+- [ ] Is secure and performant
+
+### Pull Request Requirements
+- All tests must pass
+- Code must be linted and formatted
+- Documentation must be updated
+- Security implications must be considered
+- Performance impact must be evaluated
+
+## Development Workflow
+
+### Git Workflow
+- Use feature branches
+- Write descriptive commit messages
+- Use conventional commits format
+- Keep commits atomic and focused
+
+### Pre-commit Hooks
+- Run ESLint and fix issues
+- Format code with Prettier
+- Run type checking
+- Run tests
+
+### Branch Naming
+- `feature/pdf-merge-enhancement`
+- `fix/convert-error-handling`
+- `docs/api-documentation-update`
+- `refactor/s3-service-optimization`
+
+## Dependencies
+
+### Core Dependencies
+- Express.js for API framework
+- TypeScript for type safety
+- Zod for validation
+- PDF-lib for PDF manipulation
+- AWS SDK for S3 integration
+- Winston for logging
+
+### Development Dependencies
+- ESLint for code quality
+- Prettier for code formatting
+- Husky for git hooks
+- TypeScript for compilation
+
+## Environment Variables
+
+### Required Variables
+- `PORT` - Server port
+- `AWS_REGION` - AWS region
+- `BUCKET_NAME` - S3 bucket name
+- `AWS_ACCESS_KEY_ID` - AWS access key
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key
+
+### Optional Variables
+- `API_PREFIX` - API prefix
+- `APP_NAME` - Application name
+- `LOG_PATH` - Log file path
+- `SESSION_SECRET_KEY` - Session secret
+- `JWT_SECRET_KEY` - JWT secret
+
+Remember: This is a living document. Update it as the project evolves and new patterns emerge.
