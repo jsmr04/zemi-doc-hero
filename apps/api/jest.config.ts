@@ -1,5 +1,6 @@
-// jest.config.js
-module.exports = {
+import type { Config } from '@jest/types';
+
+const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
@@ -27,3 +28,5 @@ module.exports = {
   },
   testTimeout: 10000, // 10 seconds for file operations
 };
+
+export default config;
