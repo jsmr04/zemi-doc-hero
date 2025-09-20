@@ -3,10 +3,14 @@ import * as s3 from '@/lib/aws/s3';
 import * as soffice from '@/lib/soffice';
 import { ConvertFrom } from './convert.schema';
 
+const SUPPORTED_FORMATS = ['jpg', 'png', 'docx', 'doc', 'pptx', 'ppt', 'xlsx', 'xls'];
+
 export const convertFile = async (objectName: string, from: ConvertFrom) => {
   const splitFileName = objectName.split('.');
-  if (splitFileName.length === 0) throw new Error('Invalidate object name');
+  if (splitFileName.length < 2) throw new Error('Invalid object name');
   const convertedDocumentId = `${splitFileName[0]}.pdf`;
+
+  if (!SUPPORTED_FORMATS.includes(from)) throw new Error('Invalid file format');
 
   let convertedFileBuffer = null;
   let presignedUrl = '';
