@@ -128,7 +128,7 @@ describe('Convert service TestSuite', () => {
 });
 
 function setupConvertServiceTest() {
-  const mockBuffer = Buffer.from('fake-image-data');
+  const mockBuffer = Buffer.from('fake-data');
   const mockSavedPdfBuffer = Buffer.from('fake-saved-pdf');
   const mockPresignedUrl = 'https://presignedUrl/file.pdf';
 

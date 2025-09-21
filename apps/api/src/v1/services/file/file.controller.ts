@@ -9,8 +9,12 @@ export const uploadFile = async (req: Request, res: Response) => {
   if (!document) return generateErrorAPIResponse(res, { message: 'Please upload a file.' }, 'Bad Request');
 
   try {
-    const uploadedFile = await fileService.uploadFile(document);
-    return generateSuccessfulAPIResponse<FileUploadResponse>(res, uploadedFile);
+    const uploadedFileName = await fileService.uploadFile(document.originalname, document.buffer);
+    const response: FileUploadResponse = {
+      objectName: uploadedFileName,
+      fileName: document.originalname,
+    };
+    return generateSuccessfulAPIResponse<FileUploadResponse>(res, response);
   } catch (error) {
     logger.error(error);
     return generateErrorAPIResponse(res, { message: 'Unable to upload file.' });
