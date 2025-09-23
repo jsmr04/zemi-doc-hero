@@ -17,6 +17,8 @@ const QUALITY_CONFIG: Record<FileQuality, ghostscript.CompressQuality> = {
 };
 
 export const mergePdf = async (objects: string[]) => {
+  if (!objects || objects.length === 0) throw new Error('List of objects is empty');
+
   const mergedPdf = await PDFDocument.create();
 
   for (let objectName of objects) {
@@ -132,7 +134,7 @@ export const compressPdf = async (objectName: string, quality: FileQuality) => {
   const compressQuality = QUALITY_CONFIG[quality];
   const outputObjectName = `${uuidv4() + '.pdf'}`;
 
-  if (!QUALITY_CONFIG[quality]) throw new Error('Invalid quality value.');
+  if (!compressQuality) throw new Error('Invalid quality value.');
 
   const document = await s3.getObjectAndConvertToBuffer({
     objectPrefix: 'upload',

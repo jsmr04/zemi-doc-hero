@@ -25,18 +25,16 @@ describe('File service TestSuite', () => {
     expect(putObject).toHaveBeenCalled();
     expect(uuidv4).toHaveBeenCalled();
   });
-  describe('Error handling', () => {
-    it('should throw an exception when S3 client fails', async () => {
-      //Arrange
-      const mockInput = {
-        originalname: 'test.docx',
-        buffer: Buffer.from('fake-data'),
-      };
-      (uuidv4 as jest.Mock).mockReturnValue('output');
-      (putObject as jest.Mock).mockRejectedValue(new Error('Failed to upload file'));
+  it('should throw an exception when S3 client fails', async () => {
+    //Arrange
+    const mockInput = {
+      originalname: 'test.docx',
+      buffer: Buffer.from('fake-data'),
+    };
+    (uuidv4 as jest.Mock).mockReturnValue('output');
+    (putObject as jest.Mock).mockRejectedValue(new Error('Failed to upload file'));
 
-      //Act + assert
-      await expect(uploadFile(mockInput.originalname, mockInput.buffer)).rejects.toThrow();
-    });
+    //Act + assert
+    await expect(uploadFile(mockInput.originalname, mockInput.buffer)).rejects.toThrow();
   });
 });

@@ -100,30 +100,28 @@ describe('Convert service TestSuite', () => {
       });
     });
   });
-  describe('Error handling', () => {
-    it('should throw an exception when a non-supported file format is provided', async () => {
-      // Arrange
-      const { mockBuffer, mockPresignedUrl } = setupConvertServiceTest();
+  it('should throw an exception when a non-supported file format is provided', async () => {
+    // Arrange
+    const { mockBuffer, mockPresignedUrl } = setupConvertServiceTest();
 
-      (s3.getObjectAndConvertToBuffer as jest.Mock).mockResolvedValue(mockBuffer);
-      (s3.putObject as jest.Mock).mockResolvedValue(undefined);
-      (s3.presignUrlFromExistingObject as jest.Mock).mockResolvedValue(mockPresignedUrl);
+    (s3.getObjectAndConvertToBuffer as jest.Mock).mockResolvedValue(mockBuffer);
+    (s3.putObject as jest.Mock).mockResolvedValue(undefined);
+    (s3.presignUrlFromExistingObject as jest.Mock).mockResolvedValue(mockPresignedUrl);
 
-      // Act + Assert
-      await expect(convertFile('test.svg', 'svg' as unknown as ConvertFrom)).rejects.toThrow('Invalid file format');
-    });
+    // Act + Assert
+    await expect(convertFile('test.svg', 'svg' as unknown as ConvertFrom)).rejects.toThrow('Invalid file format');
+  });
 
-    it('should throw an exception when an invalid objectName is provided', async () => {
-      // Arrange
-      const { mockBuffer, mockPresignedUrl } = setupConvertServiceTest();
+  it('should throw an exception when an invalid objectName is provided', async () => {
+    // Arrange
+    const { mockBuffer, mockPresignedUrl } = setupConvertServiceTest();
 
-      (s3.getObjectAndConvertToBuffer as jest.Mock).mockResolvedValue(mockBuffer);
-      (s3.putObject as jest.Mock).mockResolvedValue(undefined);
-      (s3.presignUrlFromExistingObject as jest.Mock).mockResolvedValue(mockPresignedUrl);
+    (s3.getObjectAndConvertToBuffer as jest.Mock).mockResolvedValue(mockBuffer);
+    (s3.putObject as jest.Mock).mockResolvedValue(undefined);
+    (s3.presignUrlFromExistingObject as jest.Mock).mockResolvedValue(mockPresignedUrl);
 
-      // Act + Assert
-      await expect(convertFile('test', 'jpg')).rejects.toThrow('Invalid object name');
-    });
+    // Act + Assert
+    await expect(convertFile('test', 'jpg')).rejects.toThrow('Invalid object name');
   });
 });
 
