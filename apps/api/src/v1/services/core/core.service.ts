@@ -59,6 +59,9 @@ export const splitPdf = async (objectName: string, ranges: number[][]) => {
   const loadedDocument = await PDFDocument.load(document);
 
   for (const [start, end] of ranges) {
+    if (start < 0 || end < 0) throw new Error('Invalid range. Range cannot be a negative value');
+    if (start > end) throw new Error('Invalid range. Start should be lower than End');
+
     const newPdf = await PDFDocument.create();
 
     const pageIndices = Array.from({ length: end - start + 1 }, (_, i) => i + start);
@@ -100,6 +103,9 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
   for (let pageNumber = 0; pageNumber < pageCount; pageNumber++) {
     let isDelete = false;
     for (const [start, end] of ranges) {
+      if (start < 0 || end < 0) throw new Error('Invalid range. Range cannot be a negative value');
+      if (start > end) throw new Error('Invalid range. Start should be lower than End');
+
       if (pageNumber >= start && pageNumber <= end) {
         isDelete = true;
       }
@@ -109,6 +115,8 @@ export const deletePagesFromPdf = async (objectName: string, ranges: number[][])
       pagesToKeep.push(pageNumber);
     }
   }
+
+  if (pagesToKeep.length === 0) throw new Error('It is not possible to delete all the pages from the document');
 
   const newPdf = await PDFDocument.create();
   const copiedPages = await newPdf.copyPages(loadedDocument, pagesToKeep);

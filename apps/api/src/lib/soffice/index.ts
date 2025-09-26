@@ -15,14 +15,14 @@ const CONVERT_TO_PDF = 'pdf';
 
 const execAsync = promisify(exec);
 
-const detectFileType = async (buffer: Uint8Array | ArrayBuffer) => {
-  const { fileTypeFromBuffer } = await import('file-type');
-  return await fileTypeFromBuffer(buffer);
-};
+// const detectFileType = async (buffer: Uint8Array | ArrayBuffer) => {
+//   const { fileTypeFromBuffer } = await import('file-type');
+//   return await fileTypeFromBuffer(buffer);
+// };
 
 export const convertFileToPdf = async ({ buffer, inputFileName, outputFileName }: ConvertFile) => {
-  const inputFileType = await detectFileType(buffer);
-  if (!inputFileType) throw new Error('Unable to determine the input file type.');
+  // const inputFileType = await detectFileType(buffer);
+  // if (!inputFileType) throw new Error('Unable to determine the input file type.');
 
   const inputDir = `${CONVERT_DIR}/input`;
   const inputFile = path.join(inputDir, inputFileName);
