@@ -46,8 +46,9 @@ export class MulterS3Storage implements multer.StorageEngine {
 
       callback(null, fileInfo);
     } catch (err) {
-      logger.error(err);
+      logger.error('S3 upload error:', err);
       callback(Error('Unable to upload file.'));
+      //TODO: Implement cleanup when upload fails
     }
   }
   _removeFile(req: express.Request, file: Express.Multer.File, callback: (error: Error | null) => void): void {

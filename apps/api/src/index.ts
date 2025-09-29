@@ -23,7 +23,6 @@ routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
 app.use(expressErrorLogger);
 
 //Multer error handling middleware
-app.use(uploadFileErrorHandler);
 
 //Swagger
 const { path, serve, setup } = swaggerMiddleware;
