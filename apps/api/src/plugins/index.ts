@@ -3,5 +3,6 @@ import bodyParser from './bodyParser';
 import session from './session';
 import helmet from './helmet';
 import { expressLogger } from './winston';
+import rateLimit from './rateLimit';
 
-export const plugins = [bodyParser, cors, corsMiddleware, helmet, session, expressLogger];
+export const plugins = [bodyParser, cors, corsMiddleware, helmet, session, expressLogger, rateLimit];
