@@ -5,6 +5,7 @@ import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
 import { healthCheck } from '@/v1/health-check';
+import { uploadFileErrorHandler } from '@/middleware/fileUploader';
 
 //Create express instance
 const app = express();
@@ -15,11 +16,14 @@ app.use(plugins);
 //Health check
 app.get('/', healthCheck);
 
-// Add routes
+//Add routes
 routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
 
 //Global error logger middleware
 app.use(expressErrorLogger);
+
+//Multer error handling middleware
+app.use(uploadFileErrorHandler);
 
 //Swagger
 const { path, serve, setup } = swaggerMiddleware;

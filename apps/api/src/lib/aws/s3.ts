@@ -6,7 +6,7 @@ import { AWS_REGION, BUCKET_NAME, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID } fro
 
 const PRESIGNED_URL_EXPIRES_IN = 3600;
 
-const s3Client = new S3Client({
+export const s3Client = new S3Client({
   region: AWS_REGION,
   credentials: {
     accessKeyId: AWS_ACCESS_KEY_ID,
