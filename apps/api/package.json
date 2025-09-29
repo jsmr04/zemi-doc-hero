@@ -8,6 +8,8 @@
     "start:dev": "nodemon",
     "test": "jest",
     "test:watch": "jest --watchAll",
+    "test:integration": "jest --config jest.integration.ts",
+    "test:all": "npm run test && npm run test:integration",
     "build": "tsc && tsc-alias",
     "eslint": "npx eslint .",
     "eslint:fix": "npx eslint . --fix",

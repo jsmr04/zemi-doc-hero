@@ -1,9 +1,10 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { PORT } from '@/configs';
 import { plugins } from '@/plugins';
 import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
+import { healthCheck } from '@/v1/health-check';
 
 //Create express instance
 const app = express();
@@ -12,13 +13,7 @@ const app = express();
 app.use(plugins);
 
 //Health check
-app.get('/', (req: Request, res: Response) =>
-  res.status(200).send({
-    uptime: process.uptime(),
-    status: 'healthy 🙂 ',
-    date: new Date(),
-  }),
-);
+app.get('/', healthCheck);
 
 // Add routes
 routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
