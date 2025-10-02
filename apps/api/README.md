@@ -74,6 +74,7 @@ apps/api/
 ### Installation
 
 #### AWS CLI
+
 ```bash
 # macOS
 brew install awscli
@@ -86,6 +87,7 @@ sudo apt-get install awscli
 ```
 
 #### Ghostscript
+
 ```bash
 # macOS
 brew install ghostscript
@@ -98,6 +100,7 @@ sudo apt-get install ghostscript
 ```
 
 #### LibreOffice
+
 ```bash
 # macOS
 brew install --cask libreoffice
@@ -113,7 +116,7 @@ sudo apt-get install libreoffice
 
 Create a `.env` file in the root directory:
 
-```env
+````env
 # Server Configuration
 PORT=8080
 NODE_ENV=development
@@ -130,7 +133,7 @@ AWS_SECRET_ACCESS_KEY=your-secret-key
 
 ```bash
 docker build -t doc-hero-api .
-```
+````
 
 ### Run Container
 
@@ -195,6 +198,7 @@ npm run test:coverage
 ## 📚 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:8080/v1
 ```
@@ -202,6 +206,7 @@ http://localhost:8080/v1
 ### Swagger Documentation
 
 Once the server is running, visit:
+
 ```
 http://localhost:8080/api-docs
 ```
@@ -248,6 +253,7 @@ npm run format
 ### Pre-commit Hooks
 
 The project uses Husky for pre-commit hooks:
+
 - ESLint checking
 - Prettier formatting
 - Type checking
@@ -291,14 +297,14 @@ docker run -d \
 
 ## 📝 Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start production server |
-| `npm run start:dev` | Start development server |
-| `npm run build` | Build TypeScript |
-| `npm test` | Run unit tests |
-| `npm run test:integration` | Run integration tests |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run eslint` | Lint code |
-| `npm run eslint:fix` | Fix linting issues |
-| `npm run format` | Format code |
+| Script                     | Description              |
+| -------------------------- | ------------------------ |
+| `npm start`                | Start production server  |
+| `npm run start:dev`        | Start development server |
+| `npm run build`            | Build TypeScript         |
+| `npm test`                 | Run unit tests           |
+| `npm run test:integration` | Run integration tests    |
+| `npm run test:coverage`    | Run tests with coverage  |
+| `npm run eslint`           | Lint code                |
+| `npm run eslint:fix`       | Fix linting issues       |
+| `npm run format`           | Format code              |

@@ -5,7 +5,6 @@ import routes, { Route } from '@/v1/routes';
 import { logger, expressErrorLogger } from '@/plugins/winston';
 import { swaggerMiddleware } from '@/plugins/swagger';
 import { healthCheck } from '@/v1/health-check';
-import { uploadFileErrorHandler } from '@/middleware/fileUploader';
 
 //Create express instance
 const app = express();
