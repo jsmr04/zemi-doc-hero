@@ -116,7 +116,7 @@ sudo apt-get install libreoffice
 
 Create a `.env` file in the root directory:
 
-````env
+```env
 # Server Configuration
 PORT=8080
 NODE_ENV=development
@@ -126,6 +126,7 @@ AWS_REGION=us-east-1
 BUCKET_NAME=s3-bucket-name
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
+```
 
 ## 🐳 Docker
 
@@ -133,7 +134,7 @@ AWS_SECRET_ACCESS_KEY=your-secret-key
 
 ```bash
 docker build -t doc-hero-api .
-````
+```
 
 ### Run Container
 
@@ -257,43 +258,11 @@ The project uses Husky for pre-commit hooks:
 - ESLint checking
 - Prettier formatting
 - Type checking
+- Tests
 
 ## 🚀 Deployment
 
-### Production Build
-
-```bash
-npm run build
-```
-
-### Environment Variables
-
-Ensure all required environment variables are set in production:
-
-```bash
-export PORT=8080
-export AWS_REGION=us-east-1
-export BUCKET_NAME=your-production-bucket
-export AWS_ACCESS_KEY_ID=your-production-key
-export AWS_SECRET_ACCESS_KEY=your-production-secret
-```
-
-### Docker Deployment
-
-```bash
-# Build production image
-docker build -t doc-hero-api:latest .
-
-# Run production container
-docker run -d \
-  --name doc-hero-api \
-  -p 8080:8080 \
-  -e AWS_ACCESS_KEY_ID=<key> \
-  -e AWS_SECRET_ACCESS_KEY=<secret> \
-  -e AWS_REGION=us-east-1 \
-  -e BUCKET_NAME=<bucket> \
-  doc-hero-api:latest
-```
+TBD
 
 ## 📝 Scripts
 

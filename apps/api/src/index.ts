@@ -21,8 +21,6 @@ routes.forEach((item: Route) => app.use('/v1' + item.routeName, item.route));
 //Global error logger middleware
 app.use(expressErrorLogger);
 
-//Multer error handling middleware
-
 //Swagger
 const { path, serve, setup } = swaggerMiddleware;
 app.use(path, serve, setup);
