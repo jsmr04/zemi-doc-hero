@@ -5,16 +5,26 @@ import { generateErrorAPIResponse } from '@/helpers/api';
 import { s3Client } from '@/lib/aws/s3';
 import { MulterS3Storage } from '@/lib/multer/s3Storage';
 
+const MINE_TYPE_PDF = 'application/pdf';
+const MINE_TYPE_JPG = 'image/jpeg';
+const MINE_TYPE_PNG = 'image/png';
+const MINE_TYPE_DOC = 'application/msword';
+const MINE_TYPE_DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const MINE_TYPE_XLS = 'application/vnd.ms-excel';
+const MINE_TYPE_XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const MINE_TYPE_PPT = 'application/vnd.ms-powerpoint';
+const MINE_TYPE_PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+
 const ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'application/pdf',
-  'application/msword', //doc
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', //docx
-  'application/vnd.ms-excel', //xls
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //xlsx
-  'application/vnd.ms-powerpoint', //ppt
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation', //pptx
+  MINE_TYPE_PDF,
+  MINE_TYPE_JPG,
+  MINE_TYPE_PNG,
+  MINE_TYPE_DOC,
+  MINE_TYPE_DOCX,
+  MINE_TYPE_XLS,
+  MINE_TYPE_XLSX,
+  MINE_TYPE_PPT,
+  MINE_TYPE_PPTX,
 ];
 
 const MAX_SIZE_IN_MB = 5;
