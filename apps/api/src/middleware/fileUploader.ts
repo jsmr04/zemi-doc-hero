@@ -51,31 +51,17 @@ export const uploadFileToS3 = multer({
  *
  */
 export const uploadFileErrorHandler = (err: MulterError, req: Request, res: Response, next: NextFunction) => {
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    return generateErrorAPIResponse(
-      res,
-      { message: `File too large. Max size is ${MAX_SIZE_IN_MB}MB.` },
-      'Bad Request',
-    );
-  } else if (err.code === 'LIMIT_FILE_COUNT') {
-    return generateErrorAPIResponse(
-      res,
-      {
-        message: 'Too many files. Only one file allowed.',
-      },
-      'Bad Request',
-    );
-  } else if (err.message === 'Unable to upload file.') {
-    return generateErrorAPIResponse(res, { message: err.message });
-  } else if (err.message.includes('Invalid file type')) {
-    return generateErrorAPIResponse(
-      res,
-      {
-        message: err.message,
-      },
-      'Unsupported Media Type',
-    );
-  }
+  const limitSizeErrorResp = { message: `File too large. Max size is ${MAX_SIZE_IN_MB}MB.` };
+  if (err.code === 'LIMIT_FILE_SIZE') return generateErrorAPIResponse(res, limitSizeErrorResp, 'Bad Request');
+
+  const limitCountErrorResp = { message: 'Too many files. Only one file allowed.' };
+  if (err.code === 'LIMIT_FILE_COUNT') return generateErrorAPIResponse(res, limitCountErrorResp, 'Bad Request');
+
+  const errorResp = { message: err.message };
+  if (err.message === 'Unable to upload file.') return generateErrorAPIResponse(res, errorResp);
+
+  const isMediaTypeError = err.message.includes('Invalid file type');
+  if (isMediaTypeError) return generateErrorAPIResponse(res, errorResp, 'Unsupported Media Type');
 
   next(err);
 };
